@@ -50,3 +50,16 @@ Only needed if the repository is made private later.
 3. Right panel: **Add Input** → Competitions → **HyperLeaf2024**; **Add Input** → Your Work → Datasets → **anycam-extra-data**.
 4. **Settings → Internet → On**.
 5. **Run All**. At the end, download the files in `anycam/reports/` and send them to Claude.
+
+## Part 6 — Save notebooks and results to GitHub automatically
+**Notebooks:** in a Kaggle notebook, menu **File → Link to GitHub** → Authorize (first time only).
+Every **Save Version** then also saves the notebook to GitHub.
+
+**Results** (reports, tables, figures) are uploaded by the last cell of each notebook, if Kaggle has a write key:
+1. github.com → your picture → **Settings** → **Developer settings** → **Personal access tokens** →
+   **Fine-grained tokens** → **Generate new token**.
+2. Name `kaggle-results`, Expiration 90 days, **Only select repositories → one-model-many-camera**,
+   **Permissions → Contents → Read and write** → **Generate token** → copy it (never paste it in a chat).
+3. In the Kaggle notebook: **Add-ons → Secrets → Add Secret**, Label `GITHUB_WRITE_TOKEN`, Value = the token, switch it On.
+
+Datasets and trained models stay on Kaggle (GitHub's limit is 100 MB per file).
