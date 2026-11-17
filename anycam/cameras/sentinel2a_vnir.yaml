@@ -1,0 +1,16 @@
+name: sentinel2a_vnir
+display_name: Sentinel-2A MSI, VNIR bands within 400-1000 nm
+type: satellite
+source: https://sentinel.esa.int/web/sentinel/technical-guides/sentinel-2-msi/msi-instrument
+note: Central wavelength = SRF barycentre, bandwidth = FWHM (ESA). Gaussian approximation until the ESA S2-SRF file is used. Band 1 (442.7 nm) kept; spatial resolution differences ignored for leaf data.
+bands:
+  - {name: B1,  center: 442.7, fwhm: 20}
+  - {name: B2,  center: 492.7, fwhm: 65}
+  - {name: B3,  center: 559.8, fwhm: 35}
+  - {name: B4,  center: 664.6, fwhm: 30}
+  - {name: B5,  center: 704.1, fwhm: 14}
+  - {name: B6,  center: 740.5, fwhm: 14}
+  - {name: B7,  center: 782.8, fwhm: 19}
+  - {name: B8,  center: 832.8, fwhm: 105}
+  - {name: B8A, center: 864.7, fwhm: 21}
+  - {name: B9,  center: 945.1, fwhm: 19}

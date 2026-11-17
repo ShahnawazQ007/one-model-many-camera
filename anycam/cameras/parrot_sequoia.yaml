@@ -1,0 +1,10 @@
+name: parrot_sequoia
+display_name: Parrot Sequoia
+type: uav_multispectral
+source: https://airborne.ed.ac.uk/airborne-research-and-innovation/airborne-sensors/multispectral-imaging/parrot-sequoia
+note: Listed as "centre BP width" in nm; width treated as FWHM. Gaussian response assumed.
+bands:
+  - {name: green,    center: 550, fwhm: 40}
+  - {name: red,      center: 660, fwhm: 40}
+  - {name: red_edge, center: 735, fwhm: 10}
+  - {name: nir,      center: 790, fwhm: 40}

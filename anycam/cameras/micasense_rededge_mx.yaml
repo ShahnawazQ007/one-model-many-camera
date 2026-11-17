@@ -1,0 +1,11 @@
+name: micasense_rededge_mx
+display_name: MicaSense RedEdge-MX (serial RX02+)
+type: uav_multispectral
+source: https://support.micasense.com/hc/en-us/articles/360011389334
+note: Maker lists "bandwidth"; treated as FWHM. Gaussian response assumed (no published curve used yet).
+bands:
+  - {name: blue,     center: 475, fwhm: 32}
+  - {name: green,    center: 560, fwhm: 27}
+  - {name: red,      center: 668, fwhm: 16}
+  - {name: red_edge, center: 717, fwhm: 12}
+  - {name: nir,      center: 842, fwhm: 57}

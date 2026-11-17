@@ -1,0 +1,13 @@
+data/raw/
+data/processed/
+*.npy
+*.npz
+*.h5
+*.pt
+*.ckpt
+__pycache__/
+.ipynb_checkpoints/
+runs/
+wandb/
+.pytest_cache/
+reports/

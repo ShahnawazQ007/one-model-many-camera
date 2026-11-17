@@ -1,0 +1,11 @@
+name: dji_p4_multispectral
+display_name: DJI Phantom 4 Multispectral
+type: uav_multispectral
+source: https://dronespec.dronedesk.io/dji-p4-multispectral
+note: Maker gives centre +/- tolerance (450 +/- 16 nm etc.); we ASSUME the +/- value is half the FWHM. Replace with DJI's response curves if obtained.
+bands:
+  - {name: blue,     center: 450, fwhm: 32}
+  - {name: green,    center: 560, fwhm: 32}
+  - {name: red,      center: 650, fwhm: 32}
+  - {name: red_edge, center: 730, fwhm: 32}
+  - {name: nir,      center: 840, fwhm: 52}

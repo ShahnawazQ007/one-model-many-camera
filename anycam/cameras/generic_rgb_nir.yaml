@@ -1,0 +1,9 @@
+name: generic_rgb_nir
+display_name: Generic RGB + NIR camera (PLACEHOLDER, e.g. modified consumer camera)
+type: rgb_nir
+source: PLACEHOLDER - generic_rgb plus an 850 nm NIR band; not a measured camera.
+bands:
+  - {name: blue,  center: 460, fwhm: 80}
+  - {name: green, center: 540, fwhm: 80}
+  - {name: red,   center: 610, fwhm: 70}
+  - {name: nir,   center: 850, fwhm: 50}

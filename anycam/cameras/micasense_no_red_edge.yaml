@@ -1,0 +1,9 @@
+name: micasense_no_red_edge
+display_name: Control - MicaSense RedEdge-MX without the red-edge band
+type: control
+source: derived from micasense_rededge_mx (red-edge band removed) to test RQ2
+bands:
+  - {name: blue,  center: 475, fwhm: 32}
+  - {name: green, center: 560, fwhm: 27}
+  - {name: red,   center: 668, fwhm: 16}
+  - {name: nir,   center: 842, fwhm: 57}

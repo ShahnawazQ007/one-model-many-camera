@@ -1,0 +1,8 @@
+name: generic_rgb
+display_name: Generic consumer RGB camera (PLACEHOLDER)
+type: rgb
+source: PLACEHOLDER - approximate Gaussian RGB, not a measured camera. Replace with measured phone sensitivities (Tominaga, Nishi, Ohtera, Sensors 2021, https://www.mdpi.com/1424-8220/21/15/4985).
+bands:
+  - {name: blue,  center: 460, fwhm: 80}
+  - {name: green, center: 540, fwhm: 80}
+  - {name: red,   center: 610, fwhm: 70}
