@@ -2,7 +2,11 @@
 
 Code lives on **GitHub**. Data and training live on **Kaggle**. Kaggle fetches both.
 
-## Part 1 — Put the code on GitHub (15 min)
+## Part 1 — Put the code on GitHub: DONE (17 Nov 2026)
+Code is at https://github.com/ShahnawazQ007/one-model-many-camera (public). Claude pushes updates directly.
+The steps below are kept only for reference.
+
+### (reference) manual way
 1. Go to **github.com** → **Sign up** (skip if you have an account).
 2. Go to **desktop.github.com** → Download for macOS → open it → drag **GitHub Desktop** into Applications.
 3. Open GitHub Desktop → **Sign in to GitHub.com** → Authorize in the browser.
@@ -20,7 +24,10 @@ Every time Claude changes the code: open GitHub Desktop → type a summary → *
    (This turns on Internet and GPU for notebooks.)
 3. Open **kaggle.com/competitions/HyperLeaf2024** → **Rules** tab → **I Understand and Accept**.
 
-## Part 3 — Let Kaggle read your private GitHub code (5 min)
+## Part 3 — SKIP while the repository is public
+Only needed if the repository is made private later.
+
+### (only for a private repository)
 1. On github.com: your picture → **Settings** → **Developer settings** (bottom left) →
    **Personal access tokens** → **Fine-grained tokens** → **Generate new token**.
 2. Name: `kaggle`. Expiration: 90 days. **Repository access → Only select repositories → anycam**.
@@ -39,7 +46,7 @@ Every time Claude changes the code: open GitHub Desktop → type a summary → *
 
 ## Part 5 — Run notebook 02 (check data + first simulation)
 1. **Create → New Notebook → File → Import Notebook** → upload `kaggle/02_setup_check_and_first_simulation.ipynb`.
-2. In the first code cell, change `YOUR_GITHUB_USERNAME` to your GitHub username.
+2. (Username and repository are already filled in.)
 3. Right panel: **Add Input** → Competitions → **HyperLeaf2024**; **Add Input** → Your Work → Datasets → **anycam-extra-data**.
-4. **Settings → Internet → On**. Add the `GITHUB_TOKEN` secret (Part 3, step 3).
+4. **Settings → Internet → On**.
 5. **Run All**. At the end, download the files in `anycam/reports/` and send them to Claude.
