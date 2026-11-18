@@ -65,7 +65,7 @@ def test_hyperleaf_image_from_zip(hl):
                                     target_stats=hyperleaf.target_stats(df, range(len(df))))
     item = ds[0]
     assert item["cube"].shape == (204, 6, 8) and item["cube"].dtype == np.float32
-    assert 0 <= item["cube"].max() <= 0.6001 and item["targets"].shape == (4,)
+    assert 0 <= item["cube"].max() <= 1.0 and item["targets"].shape == (4,)
 
 
 def test_plot_cv_no_leakage_and_full_coverage(hl):

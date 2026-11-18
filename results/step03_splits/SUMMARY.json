@@ -1,0 +1,61 @@
+{
+ "hyperleaf": {
+  "leaves": 2410,
+  "plots": 36,
+  "plots_per_treatment": {
+   "Heerup_F0": 3,
+   "Heerup_F0.5": 3,
+   "Heerup_F1": 3,
+   "Kvium_F0": 3,
+   "Kvium_F0.5": 3,
+   "Kvium_F1": 3,
+   "Rembrandt_F0": 3,
+   "Rembrandt_F0.5": 3,
+   "Rembrandt_F1": 3,
+   "Sheriff_F0": 3,
+   "Sheriff_F0.5": 3,
+   "Sheriff_F1": 3
+  },
+  "plots_in_both_official_splits": 0,
+  "leaves_per_plot_min": 20,
+  "leaves_per_plot_max": 110,
+  "cv_splits": 15,
+  "test_leaves_per_fold": [
+   370,
+   560,
+   660,
+   470,
+   350
+  ]
+ },
+ "deephs": {
+  "recordings": 440,
+  "fruits": 110,
+  "fruits_per_kind": {
+   "Kaki": 40,
+   "Mango": 40,
+   "Papaya": 30
+  },
+  "camera_pairs": 220,
+  "ripeness": {
+   "perfect": 62,
+   "overripe": 25,
+   "unripe": 23
+  },
+  "with_sugar": 440
+ },
+ "estrada": {
+  "samples": 1595,
+  "leaves": 319,
+  "leaves_per_crop": {
+   "Olive": 111,
+   "Avocado": 104,
+   "Vineyard": 104
+  },
+  "micasense_ok": 1594,
+  "spectra_range": [
+   0.013000000268220901,
+   1.1549999713897705
+  ]
+ }
+}

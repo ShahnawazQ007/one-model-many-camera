@@ -19,8 +19,11 @@ CULTIVARS = ["Heerup", "Kvium", "Rembrandt", "Sheriff"]
 REGRESSION_TARGETS = ["GrainWeight", "Gsw", "PhiPS2", "Fertilizer"]
 # Specim IQ: 204 bands, ~397-1004 nm. ASSUMED (no wavelength list ships with the data).
 WAVELENGTHS = np.linspace(397.32, 1003.58, 204)
-# Stored as uint16; assumed reflectance x 10,000 (mean leaf value ~0.27). ASSUMED.
-SCALE = 1.0 / 10000.0
+# Stored as uint16 on a 0-65,535 scale (some leaf pixels reach exactly 65,535), so values are
+# RELATIVE reflectance, not absolute. ~90% of each image is background already set to 0.
+# Checked 18 Nov 2026 on 5 images: median leaf spectrum has the expected shape
+# (green peak ~550 nm, red dip ~670 nm, red-edge rise, NIR plateau ~0.8).
+SCALE = 1.0 / 65535.0
 
 
 def load_labels(root) -> pd.DataFrame:
@@ -92,6 +95,11 @@ class HyperLeafImages:
         if a.shape[0] != 204:
             raise ValueError(f"image {image_id}: unexpected shape {a.shape}")
         return a.astype(np.float32) * self.scale
+
+
+def leaf_mask(cube: np.ndarray) -> np.ndarray:
+    """True where the pixel is leaf (background pixels are all-zero in HyperLeaf)."""
+    return cube.sum(0) > 0
 
 
 class HyperLeafDataset:

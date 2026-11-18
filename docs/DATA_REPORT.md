@@ -4,7 +4,9 @@ Raw downloads: data/data/ (zips + rar). Unpacked: data/raw/estrada_leaves only.
 HyperLeaf and DeepHS are read directly from their zip files (no 60 GB unpacking needed).
 
 ## 1. HyperLeaf2024 — data/data/HyperLeaf2024.zip  (READY)
-- 2,410 images: images/NNNNN.tiff, shape (204 bands, 48, 352), uint16 (0..65k; looks like reflectance x 10,000).
+- 2,410 images: images/NNNNN.tiff, shape (204 bands, 48, 352), uint16 on a 0-65,535 scale -> divide by 65,535
+  (RELATIVE reflectance, not absolute). ~80-92% of each image is background, already 0; the leaf is ~10-20%
+  (1,500-3,100 pixels). Median leaf spectrum looks right: green peak, red dip, red-edge rise, NIR ~0.8.
 - No wavelength list in the files: Specim IQ, 204 bands, ~397-1004 nm (assumed until confirmed).
 - Labels: train.csv (1,590) + solution.csv (820 test, with answers) = all 2,410 labelled.
   Columns: GrainWeight, Gsw (stomatal conductance), PhiPS2, Fertilizer (0 / 0.5 / 1.0), cultivar one-hot
@@ -34,3 +36,12 @@ HyperLeaf and DeepHS are read directly from their zip files (no 60 GB unpacking 
 - Labels (leaves x 5 stages): chlorophyll, nitrogen, FMC (dry and fresh basis), weight.
 - 1 damaged file in the download: Olive/Multispectral Images/leaf004d2_1.tif -> leave out olive leaf 004, stage 2.
 - Open question: MicaSense tifs are raw counts (uint16); check Sample_code_avocado.mlx for how they convert to reflectance.
+
+## Step 3 run on the real data — 18 Nov 2026
+- HyperLeaf: 2,410 leaves, 36 plots (3 per treatment, 20-110 leaves per plot), 15 plot-grouped CV splits + official split; no leakage.
+- DeepHS: 440 labelled recordings = 110 fruits (40 kaki, 40 mango, 30 papaya) x 2 cameras x 2 sides; 220 camera pairs;
+  ripeness per fruit: 62 perfect, 25 overripe, 23 unripe; all have sugar. VIS 224 x 64 x 64 (kaki), VIS_COR 249 bands;
+  values are reflectance-like (about -0.2 .. 0.7). Fruit-grouped CV; no leakage.
+- Estrada: 1,595 samples = 319 leaves (111 olive, 104 avocado, 104 grape) x 5 stages; 1,594 with all MicaSense files;
+  spectra 0.013 .. 1.155. Leaf-grouped CV; no leakage.
+- Splits and label tables saved in data/splits/ (SUMMARY.json).
