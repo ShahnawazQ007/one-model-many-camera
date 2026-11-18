@@ -13,15 +13,18 @@ HyperLeaf and DeepHS are read directly from their zip files (no 60 GB unpacking 
   (4 cultivars x 3 fertilizer levels x 3 repeats); 20-110 leaves per plot.
   The official train/test split never shares a plot -> plot-grouped CV is possible.
 
-## 2. DeepHS Fruit — Kaki.zip, Mango.zip, Papaya.zip  (IMAGES READY, LABELS MISSING)
+## 2. DeepHS Fruit — Kaki.zip, Mango.zip, Papaya.zip  (READY: labels via GitHub)
 - Each fruit has BOTH cameras: VIS = Specim FX10 (224 bands), VIS_COR = Corning microHSI 410 (249 bands).
 - ENVI .hdr + .bin, float32, BIP. Kaki 64x64 px crops; Papaya larger (e.g. 592x257).
 - Recordings (.bin): Kaki 395 VIS / 398 VIS_COR; Mango 562 / 562; Papaya 274 / 274.
-- MISSING: annotations.zip (ripeness / firmness / sugar labels) and readme.txt. Download by hand:
-  https://cogsys.cs.uni-tuebingen.de/webprojects/DeepHS-Fruit-2023-Datasets/annotations.zip
-  https://cogsys.cs.uni-tuebingen.de/webprojects/DeepHS-Fruit-2023-Datasets/readme.txt
-  -> put both in data/data/
-- Wavelength lists are not in the .hdr files: take them from the hsi_benchmark code.
+- Labels FOUND (18 Nov): the official annotations.zip link is dead, but the same labels and the camera
+  wavelength lists are in the DeepHS code repo: github.com/cogsys-tuebingen/deephs_fruit -> dataset/*_v2.json.
+  Get them with: python scripts/get_deephs_labels.py  (saves to data/raw/deephs_fruit/labels/)
+- Each JSON has: records (file paths, fruit, camera, day, side), annotations (ripeness_state:
+  unripe / ripe / near overripe / overripe, firmness, sugar_content for most, weights), cameras (wavelengths).
+- Labelled recordings per camera (front + back sides counted separately):
+  Kaki 56 train / 12 val / 12 test; Mango 56 / 12 / 12; Papaya 42 / 9 / 9 -- identical counts on VIS and VIS_COR.
+  So ~40 kaki, ~40 mango, ~30 papaya fruits are labelled: small, so the fruit test is a case study.
 
 ## 3. Estrada leaves — DATASET.rar -> data/raw/estrada_leaves/DATASET/  (READY)
 - Avocado 104 leaves, Olive 111, Vineyard (grape) 104 = 319 leaves, each at 5 drying stages = 1,595 samples.
