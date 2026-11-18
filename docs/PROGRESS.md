@@ -30,3 +30,8 @@
   The repo's own train/val/test lists share fruits between lists (leakage) -> we split by fruit.
 - anycam/data/estrada.py: 319 leaves x 5 stages; ASD spectra 350-2500 nm; MicaSense file paths; labels.
 - scripts/make_splits.py writes data/splits/*.json + SUMMARY.json. 16 tests pass (tests/test_data.py).
+
+## 18 Nov 2026 — Step 4: simulator checked against real cameras (Gate 1, simulator part: PASSED)
+- See docs/STEP4_SIMULATOR_CHECK.md. DeepHS FX10 vs Corning: r 0.94-0.998 per simulated band.
+- Estrada MicaSense files are uncalibrated counts -> band order confirmed, absolute check not possible.
+- Calibration gain range widened to 0.8-1.25 based on the measured real camera gains.

@@ -1,0 +1,9 @@
+{
+ "mapping": {
+  "b1_mean": "sim_blue",
+  "b2_mean": "sim_green",
+  "b3_mean": "sim_red",
+  "b4_mean": "sim_nir",
+  "b5_mean": "sim_red_edge"
+ }
+}

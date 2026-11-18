@@ -1,0 +1,21 @@
+scope,real_band,simulated_band,pearson_r,cv_R2,n
+all crops,b1_mean,blue,0.197,0.033,1594
+all crops,b2_mean,green,0.583,0.335,1594
+all crops,b3_mean,red,0.274,0.071,1594
+all crops,b4_mean,nir,0.06,0.003,1594
+all crops,b5_mean,red_edge,0.777,0.603,1594
+Avocado,b1_mean,blue,0.314,0.061,520
+Avocado,b2_mean,green,0.397,0.14,520
+Avocado,b3_mean,red,0.456,0.19,520
+Avocado,b4_mean,nir,0.076,0.002,520
+Avocado,b5_mean,red_edge,0.585,0.34,520
+Olive,b1_mean,blue,0.47,0.217,554
+Olive,b2_mean,green,0.335,0.107,554
+Olive,b3_mean,red,0.482,0.221,554
+Olive,b4_mean,nir,-0.057,0.002,554
+Olive,b5_mean,red_edge,0.495,0.241,554
+Vineyard,b1_mean,blue,-0.068,-0.001,520
+Vineyard,b2_mean,green,0.457,0.197,520
+Vineyard,b3_mean,red,0.078,-0.002,520
+Vineyard,b4_mean,nir,0.113,0.005,520
+Vineyard,b5_mean,red_edge,0.631,0.391,520

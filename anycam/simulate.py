@@ -92,7 +92,7 @@ def shift_camera(camera: CameraProfile, shift_nm: float) -> CameraProfile:
 
 
 def apply_radiometric(x: np.ndarray, rng: np.random.Generator, axis: int = -1,
-                      gain_range: Tuple[float, float] = (0.9, 1.1),
+                      gain_range: Tuple[float, float] = (0.8, 1.25),  # Step 4: real FX10 vs Corning gains 0.86-1.35
                       offset_range: Tuple[float, float] = (-0.02, 0.02),
                       snr_db: Optional[Tuple[float, float]] = (20.0, 50.0)) -> np.ndarray:
     """Per-band gain/offset error plus Gaussian sensor noise at a random SNR."""
