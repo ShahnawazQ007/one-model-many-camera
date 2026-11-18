@@ -35,3 +35,12 @@
 - See docs/STEP4_SIMULATOR_CHECK.md. DeepHS FX10 vs Corning: r 0.94-0.998 per simulated band.
 - Estrada MicaSense files are uncalibrated counts -> band order confirmed, absolute check not possible.
 - Calibration gain range widened to 0.8-1.25 based on the measured real camera gains.
+
+## 18 Nov 2026 — Step 5 prepared: baseline training
+- anycam/models.py: ImageNet CNN (timm) with the first conv widened to 204 bands (pretrained RGB filters
+  averaged and spread over bands) + cultivar head + 4 regression heads (multi-task).
+- anycam/train_utils.py: per-band normalisation from training leaf pixels (background kept 0), flips, metrics.
+- experiments/train_baseline.py: AdamW 3e-4, wd 0.05, cosine, 40 epochs, early stop on validation plots, AMP on GPU;
+  saves metrics.json, predictions.csv, history.csv, model.pt. Smoke-tested on CPU; data path checked on the real
+  HyperLeaf zip (29 ms per leaf).
+- kaggle/03_step5_baseline_training.ipynb: runs it on a Kaggle GPU (official split + first CV fold).
