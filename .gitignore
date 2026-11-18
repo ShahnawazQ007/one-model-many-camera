@@ -11,3 +11,5 @@ runs/
 wandb/
 .pytest_cache/
 reports/
+data/data/
+data/raw/

@@ -19,3 +19,14 @@
   kaggle/02_setup_check_and_first_simulation.ipynb (tests, GPU check, data reports, first simulation).
 - Added docs/SETUP_GITHUB_KAGGLE.md (step-by-step).
 - Not done yet: simulator check against real data (Step 4) — needs the data reports first.
+
+## 18 Nov 2026 — Step 3: data readers and leakage-free splits
+- anycam/data/hyperleaf.py: reads images straight from HyperLeaf2024.zip; labels from train.csv + solution.csv;
+  36 plots recovered from GrainWeight. Assumed: Specim IQ wavelengths 397-1004 nm, reflectance = value / 10,000.
+- anycam/data/splits.py: plot-grouped 5-fold CV (stratified by cultivar) x 3 seeds, 3 validation plots
+  (one per fertilizer level) inside each training part; official competition split kept as an extra check.
+- anycam/data/deephs.py: labels + wavelengths from the deephs_fruit repo JSON; ENVI read from the zips;
+  110 labelled fruits (40 kaki, 40 mango, 30 papaya) x 4 recordings (2 cameras x 2 sides).
+  The repo's own train/val/test lists share fruits between lists (leakage) -> we split by fruit.
+- anycam/data/estrada.py: 319 leaves x 5 stages; ASD spectra 350-2500 nm; MicaSense file paths; labels.
+- scripts/make_splits.py writes data/splits/*.json + SUMMARY.json. 16 tests pass (tests/test_data.py).
