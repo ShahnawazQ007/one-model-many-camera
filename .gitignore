@@ -13,3 +13,4 @@ wandb/
 reports/
 data/data/
 data/raw/
+runs/
