@@ -66,7 +66,7 @@ S.assert_no_leakage(labels, split)
 tr, va, te = split["train"], split["val"], split["test"]
 if a.smoke:
     tr, va, te = tr[:32], va[:16], te[:16]
-print(f"device {dev} | train {len(tr)} val {len(va)} test {len(te)} leaves")
+print(f"device {dev} | train {len(tr)} val {len(va)} test {len(te)} leaves", flush=True)
 
 images = hyperleaf.HyperLeafImages(a.data)
 rng = np.random.default_rng(a.seed)
@@ -95,7 +95,7 @@ opt = torch.optim.AdamW(model.parameters(), lr=a.lr, weight_decay=a.wd)
 sched = torch.optim.lr_scheduler.CosineAnnealingLR(opt, T_max=a.epochs)
 use_amp = dev == "cuda"
 scaler = torch.amp.GradScaler("cuda", enabled=use_amp)
-print(f"model {a.backbone}: {n_params(model) / 1e6:.2f}M parameters")
+print(f"model {a.backbone}: {n_params(model) / 1e6:.2f}M parameters", flush=True)
 
 
 def run(dl, train):
