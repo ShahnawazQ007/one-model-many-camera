@@ -22,6 +22,8 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from anycam.data import hyperleaf, splits as S  # noqa: E402
 from anycam.models import MultiTaskNet, n_params  # noqa: E402
+from anycam.cameras import load_camera  # noqa: E402
+from anycam.camera_tf import Compose, SimulatedCamera  # noqa: E402
 from anycam.train_utils import BandNorm, classification_metrics, r2_rmse, random_flip, strong_aug  # noqa: E402
 
 p = argparse.ArgumentParser()
@@ -42,6 +44,7 @@ p.add_argument("--norm-images", type=int, default=200)
 p.add_argument("--out", default=None)
 p.add_argument("--upscale", type=float, default=1.0, help="enlarge images inside the model (e.g. 2)")
 p.add_argument("--aug", choices=["flip", "strong"], default="flip")
+p.add_argument("--camera", default=None, help="train on a simulated camera (e.g. micasense_rededge_mx) instead of 204 bands")
 p.add_argument("--smoke", action="store_true")
 a = p.parse_args()
 
@@ -49,7 +52,7 @@ torch.manual_seed(a.seed); np.random.seed(a.seed)
 dev = "cuda" if torch.cuda.is_available() else ("mps" if torch.backends.mps.is_available() else "cpu")
 if a.smoke:
     a.epochs, a.patience, a.batch, a.workers, a.norm_images, a.pretrained = 2, 2, 8, 0, 8, 0
-out = pathlib.Path(a.out or ROOT / "runs" / f"baseline_{a.backbone}_{a.split}_s{a.seed}_f{a.fold}")
+out = pathlib.Path(a.out or ROOT / "runs" / f"baseline_{a.camera or 'hs204'}_{a.backbone}_{a.split}_s{a.seed}_f{a.fold}")
 out.mkdir(parents=True, exist_ok=True)
 
 # ---------------------------------------------------------------- data and split
@@ -69,19 +72,22 @@ if a.smoke:
 print(f"device {dev} | train {len(tr)} val {len(va)} test {len(te)} leaves", flush=True)
 
 images = hyperleaf.HyperLeafImages(a.data)
+cam = SimulatedCamera(load_camera(a.camera), hyperleaf.WAVELENGTHS) if a.camera else None
+raw = cam if cam else Compose()  # Compose() with no steps = identity
+IN_CH = cam.n_out if cam else 204
 rng = np.random.default_rng(a.seed)
-norm = BandNorm.fit(images(labels.ImageId[i]) for i in rng.choice(tr, min(a.norm_images, len(tr)), replace=False))
+norm = BandNorm.fit(raw(images(labels.ImageId[i])) for i in rng.choice(tr, min(a.norm_images, len(tr)), replace=False))
 json.dump(norm.state(), open(out / "band_norm.json", "w"))
 tstats = hyperleaf.target_stats(labels, tr)
 
 
 class Aug:
     def __init__(self, seed): self.rng = np.random.default_rng(seed)
-    def __call__(self, c): return (strong_aug if a.aug == 'strong' else random_flip)(norm(c), self.rng)
+    def __call__(self, c): return (strong_aug if a.aug == 'strong' else random_flip)(norm(raw(c)), self.rng)
 
 
 def loader(rows, train):
-    ds = hyperleaf.HyperLeafDataset(labels, images, rows, transform=Aug(a.seed) if train else norm, target_stats=tstats)
+    ds = hyperleaf.HyperLeafDataset(labels, images, rows, transform=Aug(a.seed) if train else Compose(raw, norm), target_stats=tstats)
     return torch.utils.data.DataLoader(ds, batch_size=a.batch, shuffle=train, num_workers=a.workers,
                                        pin_memory=dev == "cuda", drop_last=train and len(rows) > a.batch,
                                        persistent_workers=a.workers > 0)
@@ -90,7 +96,7 @@ def loader(rows, train):
 dl_tr, dl_va, dl_te = loader(tr, True), loader(va, False), loader(te, False)
 
 # ---------------------------------------------------------------- model
-model = MultiTaskNet(204, backbone=a.backbone, pretrained=bool(a.pretrained), upscale=a.upscale).to(dev)
+model = MultiTaskNet(IN_CH, backbone=a.backbone, pretrained=bool(a.pretrained), upscale=a.upscale).to(dev)
 opt = torch.optim.AdamW(model.parameters(), lr=a.lr, weight_decay=a.wd)
 sched = torch.optim.lr_scheduler.CosineAnnealingLR(opt, T_max=a.epochs)
 use_amp = dev == "cuda"
@@ -139,7 +145,7 @@ mean, std = tstats
 pred_reg = lr_.numpy() * std + mean
 true_reg = t.numpy() * std + mean
 metrics = {"split": a.split, "seed": a.seed, "fold": a.fold, "backbone": a.backbone, "best_epoch": best_ep,
-           "upscale": a.upscale, "aug": a.aug,
+           "upscale": a.upscale, "aug": a.aug, "camera": a.camera or "hyperspectral_204",
            "n_test": len(ids), "cultivar": classification_metrics(y.numpy(), pred_cls, 4)}
 for j, name in enumerate(hyperleaf.REGRESSION_TARGETS):
     metrics[name] = r2_rmse(true_reg[:, j], pred_reg[:, j])

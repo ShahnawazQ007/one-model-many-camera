@@ -64,3 +64,9 @@
 - Decision: **A (ResNet18, upscale 2, strong aug) is the reference baseline** for Steps 6-7 (best cultivar, 3x fewer params, ~70 s/epoch on T4). ConvNeXt validation loss very unstable.
 - Still overfits (train 0.37 vs val 1.2-1.5). Paper (ConvNeXt-S, own split) cultivar 0.893. Final numbers will come from plot-grouped CV.
 - Figures + CSV: results/step05_baseline/.
+
+## 20 Nov 2026 — Step 6 prepared (E1 + E2)
+- `anycam/camera_tf.py`: SimulatedCamera (simulate, optional drift / gain-offset-noise, optional linear map back to 204 bands).
+- `train_baseline.py --camera X`: camera-specific model ("one model per camera" reference).
+- `experiments/eval_cameras.py`: 204-band model on 7 cameras x {nominal, drift (3 units), radiometric, drift+radio} -> camera_eval.csv/png.
+- Kaggle: `kaggle/04_step6_camera_test.ipynb` (~2 h).
