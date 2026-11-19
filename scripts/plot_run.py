@@ -80,4 +80,7 @@ def plot(run):
 
 if __name__ == "__main__":
     for r in sys.argv[1:]:
+        if not (pathlib.Path(r) / "metrics.json").exists():
+            print("skipped (run not finished):", r)
+            continue
         plot(r)
