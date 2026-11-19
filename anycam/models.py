@@ -32,8 +32,10 @@ def _widen_first_conv(model: nn.Module, in_channels: int) -> None:
 
 class MultiTaskNet(nn.Module):
     def __init__(self, in_channels: int, n_classes: int = 4, n_reg: int = 4,
-                 backbone: str = "resnet18", pretrained: bool = True, dropout: float = 0.2):
+                 backbone: str = "resnet18", pretrained: bool = True, dropout: float = 0.2,
+                 upscale: float = 1.0):
         super().__init__()
+        self.upscale = upscale
         import timm
         self.backbone = timm.create_model(backbone, pretrained=pretrained, num_classes=0, global_pool="avg")
         _widen_first_conv(self.backbone, in_channels)
@@ -43,6 +45,8 @@ class MultiTaskNet(nn.Module):
         self.reg = nn.Linear(d, n_reg)
 
     def forward(self, x):
+        if self.upscale != 1.0:  # small leaf images: enlarge so the CNN keeps more spatial detail
+            x = nn.functional.interpolate(x, scale_factor=self.upscale, mode="bilinear", align_corners=False)
         z = self.drop(self.backbone(x))
         return self.cls(z), self.reg(z)
 

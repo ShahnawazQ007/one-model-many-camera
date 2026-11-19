@@ -54,3 +54,15 @@ def r2_rmse(y_true, y_pred):
     ss = np.sum((y_true - y_true.mean()) ** 2)
     return {"R2": float(1 - np.sum((y_true - y_pred) ** 2) / ss) if ss > 0 else float("nan"),
             "RMSE": float(np.sqrt(np.mean((y_true - y_pred) ** 2)))}
+
+
+def strong_aug(cube, rng, max_shift=6, gain=0.05, noise=0.02):
+    """Flips + small shift + small per-band gain + noise on leaf pixels (background stays 0).
+    Applied AFTER band normalisation, so gain/noise are in standardised units."""
+    cube = random_flip(cube, rng)
+    m = (cube != 0).any(0)
+    dy, dx = rng.integers(-max_shift, max_shift + 1, 2)
+    cube = np.roll(cube, (int(dy), int(dx)), axis=(1, 2)); m = np.roll(m, (int(dy), int(dx)), axis=(0, 1))
+    g = 1 + rng.uniform(-gain, gain, (cube.shape[0], 1, 1)).astype(np.float32)
+    cube = cube * g + rng.normal(0, noise, cube.shape).astype(np.float32)
+    return np.ascontiguousarray(cube * m[None]).astype(np.float32)

@@ -44,3 +44,9 @@
   saves metrics.json, predictions.csv, history.csv, model.pt. Smoke-tested on CPU; data path checked on the real
   HyperLeaf zip (29 ms per leaf).
 - kaggle/03_step5_baseline_training.ipynb: runs it on a Kaggle GPU (official split + first CV fold).
+
+## 19 Nov 2026 — Step 5 first result (Kaggle GPU, official split, ResNet18, 204 bands)
+- Cultivar accuracy 0.730 (macro-F1 0.705); R2: grain weight 0.712, Gsw 0.114, PhiPS2 0.407, fertilizer 0.774.
+- Best epoch 7, early stop at 15; train loss 0.33 vs validation 1.4-1.6 -> overfitting.
+- Paper reference (ConvNeXt-S): cultivar 0.893, fertilizer R2 0.84, Gsw R2 0.19 (their split differs).
+- Next: input upscaling (2x) + stronger augmentation; ConvNeXt-Tiny (kaggle/03b_step5_improved_baseline.ipynb).

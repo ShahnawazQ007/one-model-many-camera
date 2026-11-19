@@ -37,3 +37,15 @@ def test_bandnorm_keeps_background_zero():
 def test_metrics():
     assert classification_metrics([0, 1, 2, 3], [0, 1, 2, 3], 4)["accuracy"] == 1.0
     assert abs(r2_rmse([1, 2, 3], [1, 2, 3])["R2"] - 1) < 1e-9
+
+
+def test_upscale_and_strong_aug():
+    m = MultiTaskNet(204, pretrained=False, upscale=2.0)
+    lc, lr = m(torch.randn(1, 204, 48, 352))
+    assert lc.shape == (1, 4)
+    from anycam.train_utils import strong_aug
+    rng = np.random.default_rng(0)
+    c = np.zeros((5, 20, 30), np.float32); c[:, 5:15, 5:25] = 1.0
+    out = strong_aug(c, rng)
+    assert out.shape == c.shape and (out[:, (out != 0).any(0)].size > 0)
+    assert ((out != 0).any(0)).sum() == ((c != 0).any(0)).sum()  # leaf area kept (shift, no growth)

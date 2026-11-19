@@ -22,7 +22,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from anycam.data import hyperleaf, splits as S  # noqa: E402
 from anycam.models import MultiTaskNet, n_params  # noqa: E402
-from anycam.train_utils import BandNorm, classification_metrics, r2_rmse, random_flip  # noqa: E402
+from anycam.train_utils import BandNorm, classification_metrics, r2_rmse, random_flip, strong_aug  # noqa: E402
 
 p = argparse.ArgumentParser()
 p.add_argument("--data", required=True, help="HyperLeaf2024.zip or the unzipped folder")
@@ -40,6 +40,8 @@ p.add_argument("--wd", type=float, default=0.05)
 p.add_argument("--workers", type=int, default=4)
 p.add_argument("--norm-images", type=int, default=200)
 p.add_argument("--out", default=None)
+p.add_argument("--upscale", type=float, default=1.0, help="enlarge images inside the model (e.g. 2)")
+p.add_argument("--aug", choices=["flip", "strong"], default="flip")
 p.add_argument("--smoke", action="store_true")
 a = p.parse_args()
 
@@ -75,7 +77,7 @@ tstats = hyperleaf.target_stats(labels, tr)
 
 class Aug:
     def __init__(self, seed): self.rng = np.random.default_rng(seed)
-    def __call__(self, c): return random_flip(norm(c), self.rng)
+    def __call__(self, c): return (strong_aug if a.aug == 'strong' else random_flip)(norm(c), self.rng)
 
 
 def loader(rows, train):
@@ -88,7 +90,7 @@ def loader(rows, train):
 dl_tr, dl_va, dl_te = loader(tr, True), loader(va, False), loader(te, False)
 
 # ---------------------------------------------------------------- model
-model = MultiTaskNet(204, backbone=a.backbone, pretrained=bool(a.pretrained)).to(dev)
+model = MultiTaskNet(204, backbone=a.backbone, pretrained=bool(a.pretrained), upscale=a.upscale).to(dev)
 opt = torch.optim.AdamW(model.parameters(), lr=a.lr, weight_decay=a.wd)
 sched = torch.optim.lr_scheduler.CosineAnnealingLR(opt, T_max=a.epochs)
 use_amp = dev == "cuda"
@@ -137,6 +139,7 @@ mean, std = tstats
 pred_reg = lr_.numpy() * std + mean
 true_reg = t.numpy() * std + mean
 metrics = {"split": a.split, "seed": a.seed, "fold": a.fold, "backbone": a.backbone, "best_epoch": best_ep,
+           "upscale": a.upscale, "aug": a.aug,
            "n_test": len(ids), "cultivar": classification_metrics(y.numpy(), pred_cls, 4)}
 for j, name in enumerate(hyperleaf.REGRESSION_TARGETS):
     metrics[name] = r2_rmse(true_reg[:, j], pred_reg[:, j])
