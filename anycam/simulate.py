@@ -123,14 +123,15 @@ def sample_virtual_camera(rng: np.random.Generator,
                           p_red_edge: float = 0.5,
                           held_out: Iterable[CameraProfile] = (),
                           tol_nm: float = 15.0,
-                          max_tries: int = 100) -> CameraProfile:
+                          max_tries: int = 100,
+                          margin_scale: float = 1.0) -> CameraProfile:
     """Draw a random camera for one mini-batch (leave-camera-out aware)."""
     lo, hi = wl_range
     held_out = list(held_out)
     for _ in range(max_tries):
         n = int(rng.integers(n_bands[0], n_bands[1] + 1))
         fwhm = rng.uniform(*fwhm_range, size=n)
-        margin = fwhm  # keep each band's mass inside the source range
+        margin = margin_scale * fwhm  # keep each band's mass inside the source range (0.6 -> ~90 %)
         centers = rng.uniform(lo + margin, hi - margin)
         if rng.random() < p_red_edge:
             centers[0] = rng.uniform(*RED_EDGE)

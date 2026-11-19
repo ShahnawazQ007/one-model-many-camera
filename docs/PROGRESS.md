@@ -77,3 +77,11 @@
 - drift (+-10 nm, +-25 % FWHM) changes little compared with the camera gap itself; gain/offset/noise costs the 204 model 0.82 -> 0.77 even on its own data.
 - camera-specific models recover almost everything: MicaSense 0.760 / fert 0.778, Sentinel-2 0.718 / 0.791, phone RGB 0.795 / 0.720.
 => the information IS in a few bands; the failure is the model, not the camera. Target for SVCT: one model near the green bars on every camera.
+
+## 20 Nov 2026 — Step 7 prepared (SVCT)
+- `anycam/svct.py`: SpectralStats (any camera's normalisation from the 204-band mean/covariance), GPURenderer
+  (SRF + per-sample gain/offset/noise on GPU), WavelengthStem (hyper-network filters per band, initialised from the
+  ImageNet RGB filters interpolated over wavelength), SVCTNet, consistency loss.
+- `experiments/train_svct.py`: random virtual cameras (3-12 bands, FWHM 10-100 nm, p_full 0.15), 7 real profiles held out
+  (15 nm rule); validation on 6 fixed virtual cameras; test on 204 + 7 real x 4 conditions + 20 random cameras.
+- Kaggle `kaggle/05_step7_svct.ipynb`: SVCT main, ablation interp-stem, ablation no-consistency; `scripts/plot_step7.py`.
