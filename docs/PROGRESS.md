@@ -54,3 +54,13 @@
   R2 grain 0.484, Gsw -0.05, PhiPS2 0.484, fertilizer 0.806. ~30 s/epoch on T4 at upscale 1.
 - Confusion: Rembrandt <-> Heerup most confused. Gsw not predictable (paper 0.19 too). Fertilizer is the most robust target.
 - Figures: results/step05_baseline/ (extracted from kaggle_runs/03_step5_baseline_training.ipynb).
+
+## 20 Nov 2026 — Step 5 improved baseline (new_baseline_kaggle.ipynb)
+| run | cultivar acc | F1 | grain R2 | Gsw R2 | PhiPS2 R2 | fert R2 |
+|---|---|---|---|---|---|---|
+| ResNet18 plain | 0.730 | 0.705 | 0.712 | 0.114 | 0.407 | 0.774 |
+| A ResNet18 up2 strong | **0.821** | **0.805** | 0.584 | 0.077 | **0.524** | 0.759 |
+| B ConvNeXt-T up2 strong | 0.768 | 0.764 | **0.714** | 0.037 | 0.471 | **0.785** |
+- Decision: **A (ResNet18, upscale 2, strong aug) is the reference baseline** for Steps 6-7 (best cultivar, 3x fewer params, ~70 s/epoch on T4). ConvNeXt validation loss very unstable.
+- Still overfits (train 0.37 vs val 1.2-1.5). Paper (ConvNeXt-S, own split) cultivar 0.893. Final numbers will come from plot-grouped CV.
+- Figures + CSV: results/step05_baseline/.

@@ -1,0 +1,4 @@
+run,backbone,upscale,aug,best_epoch,cultivar_acc,cultivar_F1,GrainWeight_R2,Gsw_R2,PhiPS2_R2,Fertilizer_R2
+baseline_official,resnet18,1.0,flip,7,0.730,0.705,0.712,0.114,0.407,0.774
+A_resnet18_up2_strong,resnet18,2.0,strong,9,0.821,0.805,0.584,0.077,0.524,0.759
+B_convnext_tiny_up2_strong,convnext_tiny,2.0,strong,11,0.768,0.764,0.714,0.037,0.471,0.785
