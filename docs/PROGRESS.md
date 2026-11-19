@@ -70,3 +70,10 @@
 - `train_baseline.py --camera X`: camera-specific model ("one model per camera" reference).
 - `experiments/eval_cameras.py`: 204-band model on 7 cameras x {nominal, drift (3 units), radiometric, drift+radio} -> camera_eval.csv/png.
 - Kaggle: `kaggle/04_step6_camera_test.ipynb` (~2 h).
+
+## 20 Nov 2026 — Step 6 RESULT (kaggle_runs/04_step6_camera_test.ipynb; results/step06_camera_test/)
+204-band model (cultivar 0.821, fert R2 0.759) tested on simulated cameras (bands mapped back to 204 by interpolation):
+- cultivar accuracy falls to 0.36 (phone RGB) - 0.61 (Sentinel-2); fertilizer R2 negative for 4/7 cameras (Parrot, MicaSense-no-RE ~ -1.2 to -1.4).
+- drift (+-10 nm, +-25 % FWHM) changes little compared with the camera gap itself; gain/offset/noise costs the 204 model 0.82 -> 0.77 even on its own data.
+- camera-specific models recover almost everything: MicaSense 0.760 / fert 0.778, Sentinel-2 0.718 / 0.791, phone RGB 0.795 / 0.720.
+=> the information IS in a few bands; the failure is the model, not the camera. Target for SVCT: one model near the green bars on every camera.
