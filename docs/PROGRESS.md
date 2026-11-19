@@ -50,3 +50,7 @@
 - Best epoch 7, early stop at 15; train loss 0.33 vs validation 1.4-1.6 -> overfitting.
 - Paper reference (ConvNeXt-S): cultivar 0.893, fertilizer R2 0.84, Gsw R2 0.19 (their split differs).
 - Next: input upscaling (2x) + stronger augmentation; ConvNeXt-Tiny (kaggle/03b_step5_improved_baseline.ipynb).
+- Re-run reproduced 5a exactly (seeded). CV seed0 fold0 (370 test leaves, unseen plots): cultivar 0.592 / F1 0.578;
+  R2 grain 0.484, Gsw -0.05, PhiPS2 0.484, fertilizer 0.806. ~30 s/epoch on T4 at upscale 1.
+- Confusion: Rembrandt <-> Heerup most confused. Gsw not predictable (paper 0.19 too). Fertilizer is the most robust target.
+- Figures: results/step05_baseline/ (extracted from kaggle_runs/03_step5_baseline_training.ipynb).
