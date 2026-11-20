@@ -105,3 +105,6 @@ Mean over 7 held-out real cameras, ideal (cultivar / fert R2): 204-band 0.522 / 
 - Consistency loss hurts cultivar in both rounds (sym and teacher) -> drop from the method, report as a negative ablation.
 - No-consistency run hit the 80-epoch limit while still improving (val acc 0.59 rising) -> train longer.
 - Clean stem ablation still missing (interp WITHOUT consistency).
+- Round 3 prepared (kaggle/05c_step7_round3.ipynb): final config = no consistency, p_full 0.3, radio 0.5, mixed sampler
+  weights 0.45/0.35/0.2 (rgb-like/multispectral/random), 150 epochs patience 50; clean stem ablation (interp, same config).
+  Method is frozen after this run.

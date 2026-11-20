@@ -208,7 +208,8 @@ _MS_SLOTS = [(440.0, 500.0), (520.0, 580.0), (630.0, 690.0), (700.0, 750.0), (76
 
 
 def sample_structured_camera(rng: np.random.Generator, held_out: Sequence[CameraProfile] = (), tol_nm: float = 15.0,
-                             wl_range=(400.0, 1000.0), max_tries: int = 200) -> CameraProfile:
+                             wl_range=(400.0, 1000.0), max_tries: int = 200,
+                             weights=(1 / 3, 1 / 3, 1 / 3)) -> CameraProfile:
     """Mixture of camera families, so that common real camera *types* are practised without copying any
     real camera (anything within tol_nm of a held-out camera is rejected):
       1/3 'rgb-like'  3-4 wide bands in the visible (optionally one NIR band)
@@ -218,7 +219,7 @@ def sample_structured_camera(rng: np.random.Generator, held_out: Sequence[Camera
     from .simulate import _too_close, sample_virtual_camera
     lo, hi = wl_range
     for _ in range(max_tries):
-        kind = rng.integers(3)
+        kind = rng.choice(3, p=np.asarray(weights, float) / np.sum(weights))  # 0 rgb-like, 1 multispectral, 2 random
         if kind == 2:
             return sample_virtual_camera(rng, held_out=held_out, fwhm_range=(10.0, 100.0), margin_scale=0.6)
         if kind == 0:

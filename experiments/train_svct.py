@@ -48,6 +48,7 @@ p.add_argument("--cons-mode", choices=["sym", "teacher"], default="sym",
 p.add_argument("--sampler", choices=["uniform", "mixed"], default="uniform", help="mixed: rgb-like / multispectral / random (round 2)")
 p.add_argument("--select", choices=["loss", "acc"], default="loss", help="checkpoint by validation loss or by validation accuracy+R2")
 p.add_argument("--val-cams", type=int, default=5)
+p.add_argument("--family-weights", default="1,1,1", help="mixed sampler: rgb-like,multispectral,random")
 p.add_argument("--radio", type=float, default=0.5, help="probability of calibration error per training sample")
 p.add_argument("--p-full", type=float, default=0.15, help="probability that a batch uses the full 204 bands")
 p.add_argument("--held-out", choices=["all", "none"], default="all")
@@ -147,7 +148,7 @@ cam_rng = np.random.default_rng(a.seed + 1)
 
 def draw_virtual(r):
     if a.sampler == "mixed":
-        return sample_structured_camera(r, held_out=HELD)
+        return sample_structured_camera(r, held_out=HELD, weights=[float(v) for v in a.family_weights.split(',')])
     return sample_virtual_camera(r, held_out=HELD, fwhm_range=(10.0, 100.0), margin_scale=0.6)
 
 
