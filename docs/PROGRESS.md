@@ -108,3 +108,11 @@ Mean over 7 held-out real cameras, ideal (cultivar / fert R2): 204-band 0.522 / 
 - Round 3 prepared (kaggle/05c_step7_round3.ipynb): final config = no consistency, p_full 0.3, radio 0.5, mixed sampler
   weights 0.45/0.35/0.2 (rgb-like/multispectral/random), 150 epochs patience 50; clean stem ablation (interp, same config).
   Method is frozen after this run.
+
+## 21 Nov 2026 — Step 7 round 3 RESULT, METHOD FROZEN (kaggle_runs/05c_step7_round3.ipynb; results/step07_svct_round3/)
+Mean over 7 held-out real cameras, ideal (cultivar / fert R2 / grain R2):
+- 204-band model 0.522 / -0.364 / -0.685 | one model per camera 0.757 / 0.765 / 0.694
+- SVCT + wavelength stem 0.670 / **0.582 / 0.528** (best epoch 21; robust: drift+radio 0.640 / 0.462)
+- SVCT + interpolation (plain 204-band ResNet) **0.732** / 0.468 / 0.429 (phone RGB 0.768 vs oracle 0.795)
+=> SVCT closes ~89 % of the cultivar gap (interp) and ~84 % of the fertilizer gap (stem). Stem = better regression,
+   interp = better classification. Single split: confirm with CV/seeds before claiming which variant is better.
