@@ -70,3 +70,22 @@ def test_gradients_reach_hypernetwork_and_consistency_is_zero_for_same_output():
     assert net.stem.mlp[-1].weight.grad.abs().sum() > 0
     o = (torch.randn(3, 4), torch.randn(3, 4))
     assert consistency_loss(o, o).item() < 1e-6
+
+
+def test_structured_sampler_respects_held_out_and_range():
+    from anycam.cameras import list_cameras
+    from anycam.simulate import _too_close
+    from anycam.svct import sample_structured_camera, distill_loss
+    held = [load_camera(n) for n in list_cameras()]
+    rng = np.random.default_rng(0)
+    kinds = set()
+    for _ in range(300):
+        c = sample_structured_camera(rng, held_out=held)
+        assert 3 <= len(c) <= 12
+        assert not any(_too_close(c.centers, h, 15.0) for h in held if len(h) == len(c))
+        kinds.add(len(c))
+        from anycam.simulate import srf_matrix
+        srf_matrix(WAVELENGTHS, c)   # raises if a band falls outside the sensor range
+    assert {3, 4, 5}.issubset(kinds)
+    o = (torch.randn(3, 4), torch.randn(3, 4))
+    assert distill_loss(o, o).item() < 1e-6

@@ -30,7 +30,7 @@ from anycam.cameras import list_cameras, load_camera  # noqa: E402
 from anycam.data import hyperleaf, splits as S  # noqa: E402
 from anycam.models import MultiTaskNet, n_params  # noqa: E402
 from anycam.simulate import perturb_camera, sample_virtual_camera  # noqa: E402
-from anycam.svct import (GPURenderer, SpectralStats, SVCTNet, camera_tensors, consistency_loss,  # noqa: E402
+from anycam.svct import (distill_loss, sample_structured_camera, GPURenderer, SpectralStats, SVCTNet, camera_tensors, consistency_loss,  # noqa: E402
                          full_camera, geo_aug)
 from anycam.train_utils import classification_metrics, r2_rmse  # noqa: E402
 
@@ -43,6 +43,11 @@ p.add_argument("--fold", type=int, default=0)
 p.add_argument("--stem", choices=["hyper", "interp"], default="hyper")
 p.add_argument("--views", type=int, choices=[1, 2], default=2)
 p.add_argument("--cons", type=float, default=1.0, help="weight of the consistency loss (needs --views 2)")
+p.add_argument("--cons-mode", choices=["sym", "teacher"], default="sym",
+               help="sym: two random cameras agree (round 1); teacher: view 1 is the full 204 bands and the camera view learns from it")
+p.add_argument("--sampler", choices=["uniform", "mixed"], default="uniform", help="mixed: rgb-like / multispectral / random (round 2)")
+p.add_argument("--select", choices=["loss", "acc"], default="loss", help="checkpoint by validation loss or by validation accuracy+R2")
+p.add_argument("--val-cams", type=int, default=5)
 p.add_argument("--radio", type=float, default=0.5, help="probability of calibration error per training sample")
 p.add_argument("--p-full", type=float, default=0.15, help="probability that a batch uses the full 204 bands")
 p.add_argument("--held-out", choices=["all", "none"], default="all")
@@ -140,14 +145,20 @@ def task_loss(o, y, t):
 cam_rng = np.random.default_rng(a.seed + 1)
 
 
-def draw_camera(r):
-    if r.random() < a.p_full:
-        return FULL
+def draw_virtual(r):
+    if a.sampler == "mixed":
+        return sample_structured_camera(r, held_out=HELD)
     return sample_virtual_camera(r, held_out=HELD, fwhm_range=(10.0, 100.0), margin_scale=0.6)
 
 
+def draw_camera(r):
+    if r.random() < a.p_full:
+        return FULL
+    return draw_virtual(r)
+
+
 vr = np.random.default_rng(12345)
-VAL_CAMS = [FULL] + [sample_virtual_camera(vr, held_out=HELD, fwhm_range=(10.0, 100.0), margin_scale=0.6) for _ in range(5)]
+VAL_CAMS = [FULL] + [draw_virtual(vr) for _ in range(a.val_cams)]
 
 # ---------------------------------------------------------------- training
 best, best_ep, hist, t0 = 1e9, -1, [], time.time()
@@ -156,28 +167,37 @@ for ep in range(a.epochs):
     tot, n = 0.0, 0
     for b in dl_tr:
         x = b["cube"].to(dev, non_blocking=True); y = b["cultivar"].to(dev); t = b["targets"].to(dev)
-        c1 = draw_camera(cam_rng)
+        if a.views == 2 and a.cons_mode == "teacher":
+            c1, c2 = FULL, draw_virtual(cam_rng)
+        else:
+            c1 = draw_camera(cam_rng)
+            c2 = draw_camera(cam_rng) if a.views == 2 else None
         o1 = forward(view(x, c1, radio=a.radio), c1)
         loss = task_loss(o1, y, t)
-        if a.views == 2:
-            c2 = draw_camera(cam_rng)
+        if c2 is not None:
             o2 = forward(view(x, c2, radio=a.radio), c2)
-            loss = 0.5 * (loss + task_loss(o2, y, t)) + a.cons * consistency_loss(o1, o2)
+            cons = distill_loss(o2, o1) if a.cons_mode == "teacher" else consistency_loss(o1, o2)
+            loss = 0.5 * (loss + task_loss(o2, y, t)) + a.cons * cons
         opt.zero_grad(set_to_none=True); scaler.scale(loss).backward(); scaler.step(opt); scaler.update()
         tot += loss.item() * len(y); n += len(y)
     model.eval()
-    vtot, vn = 0.0, 0
+    vtot, vn, vacc, vmse = 0.0, 0, 0.0, 0.0
     with torch.no_grad():
         for b in dl_va:
             x = b["cube"].to(dev); y = b["cultivar"].to(dev); t = b["targets"].to(dev)
             for c in VAL_CAMS:
-                vtot += task_loss(forward(view(x, c), c), y, t).item() * len(y); vn += len(y)
+                o = forward(view(x, c), c)
+                vtot += task_loss(o, y, t).item() * len(y); vn += len(y)
+                vacc += (o[0].argmax(1) == y).float().sum().item()
+                vmse += F.mse_loss(o[1].float(), t, reduction="none").mean(1).sum().item()
     sched.step()
-    vl = vtot / vn
-    hist.append({"epoch": ep, "train_loss": tot / n, "val_loss": vl, "sec": round(time.time() - t0)})
-    print(f"epoch {ep:2d} train {tot / n:.3f} val {vl:.3f} ({time.time() - t0:.0f}s)", flush=True)
-    if vl < best:
-        best, best_ep = vl, ep
+    vl, va_acc, va_mse = vtot / vn, vacc / vn, vmse / vn
+    crit = vl if a.select == "loss" else -(va_acc - 0.25 * va_mse)
+    hist.append({"epoch": ep, "train_loss": tot / n, "val_loss": vl, "val_acc": va_acc, "val_mse": va_mse,
+                 "sec": round(time.time() - t0)})
+    print(f"epoch {ep:2d} train {tot / n:.3f} val {vl:.3f} acc {va_acc:.3f} mse {va_mse:.3f} ({time.time() - t0:.0f}s)", flush=True)
+    if crit < best:
+        best, best_ep = crit, ep
         torch.save(model.state_dict(), out / "model.pt")
     elif ep - best_ep >= a.patience:
         print("early stop", flush=True); break

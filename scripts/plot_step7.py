@@ -16,6 +16,7 @@ import matplotlib.pyplot as plt
 p = argparse.ArgumentParser()
 p.add_argument("--baseline", required=True, help="Step 6 camera_eval.csv (204-band model + camera-specific models)")
 p.add_argument("--runs", nargs="+", default=[], help='"label=run_dir" pairs')
+p.add_argument("--oracles", default=None, help='glob of extra camera-specific runs, e.g. "runs/oracle_*"')
 p.add_argument("--out", default="runs/step7_compare")
 a = p.parse_args()
 out = pathlib.Path(a.out); out.mkdir(parents=True, exist_ok=True)
@@ -23,6 +24,23 @@ out = pathlib.Path(a.out); out.mkdir(parents=True, exist_ok=True)
 base = pd.read_csv(a.baseline)
 frames = [base[base.condition != "trained_on_this_camera"].assign(method="204-band model (Step 6)"),
           base[base.condition == "trained_on_this_camera"].assign(method="one model per camera", condition="nominal")]
+if a.oracles:
+    import glob, json
+    extra = []
+    for d in sorted(glob.glob(a.oracles)):
+        f = pathlib.Path(d) / "metrics.json"
+        if f.exists():
+            m = json.load(open(f))
+            extra.append({"camera": m["camera"], "type": "", "n_bands": 0, "condition": "nominal",
+                          "cultivar_acc": m["cultivar"]["accuracy"], "cultivar_F1": m["cultivar"]["macro_f1"],
+                          **{f"{t}_R2": m[t]["R2"] for t in ("GrainWeight", "Gsw", "PhiPS2", "Fertilizer")},
+                          "method": "one model per camera"})
+    if extra:
+        e = pd.DataFrame(extra)
+        nb = base.drop_duplicates("camera").set_index("camera")["n_bands"]
+        e["n_bands"] = e.camera.map(nb)
+        old = frames[1]
+        frames[1] = pd.concat([old[~old.camera.isin(e.camera)], e], ignore_index=True)
 for spec in a.runs:
     label, d = spec.split("=", 1)
     f = pathlib.Path(d) / "camera_eval.csv"

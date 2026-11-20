@@ -201,3 +201,48 @@ def geo_aug(cube: np.ndarray, rng: np.random.Generator, max_shift: int = 6) -> n
         cube = cube[:, ::-1, :]
     dy, dx = rng.integers(-max_shift, max_shift + 1, 2)
     return np.ascontiguousarray(np.roll(cube, (int(dy), int(dx)), axis=(1, 2)))
+
+
+# ---------------------------------------------------------------- round 2: structured virtual cameras
+_MS_SLOTS = [(440.0, 500.0), (520.0, 580.0), (630.0, 690.0), (700.0, 750.0), (760.0, 900.0)]  # B, G, R, RE, NIR
+
+
+def sample_structured_camera(rng: np.random.Generator, held_out: Sequence[CameraProfile] = (), tol_nm: float = 15.0,
+                             wl_range=(400.0, 1000.0), max_tries: int = 200) -> CameraProfile:
+    """Mixture of camera families, so that common real camera *types* are practised without copying any
+    real camera (anything within tol_nm of a held-out camera is rejected):
+      1/3 'rgb-like'  3-4 wide bands in the visible (optionally one NIR band)
+      1/3 'multispectral'  4-6 bands from B/G/R/red-edge/NIR slots with jittered centres, 10-60 nm wide
+      1/3 'random'    the round-1 sampler (3-12 bands anywhere, 10-100 nm)
+    """
+    from .simulate import _too_close, sample_virtual_camera
+    lo, hi = wl_range
+    for _ in range(max_tries):
+        kind = rng.integers(3)
+        if kind == 2:
+            return sample_virtual_camera(rng, held_out=held_out, fwhm_range=(10.0, 100.0), margin_scale=0.6)
+        if kind == 0:
+            c = np.sort(rng.uniform([430, 510, 580], [490, 570, 650]))
+            w = rng.uniform(40.0, 100.0, 3)
+            if rng.random() < 0.3:
+                c = np.append(c, rng.uniform(780, 900)); w = np.append(w, rng.uniform(30, 100))
+        else:
+            k = int(rng.integers(4, 6))
+            slots = np.sort(rng.choice(len(_MS_SLOTS), size=k, replace=False))
+            c = np.array([rng.uniform(*_MS_SLOTS[s]) for s in slots])
+            w = rng.uniform(10.0, 60.0, k)
+        ok = (c - 0.6 * w > lo) & (c + 0.6 * w < hi)
+        if not ok.all():
+            continue
+        if any(_too_close(c, h, tol_nm) for h in held_out if len(h) == len(c)):
+            continue
+        return CameraProfile.from_lists("virtual", c.tolist(), w.tolist(), type="virtual")
+    raise RuntimeError("could not sample a structured camera")
+
+
+def distill_loss(student, teacher, T: float = 2.0):
+    """Student (camera view) learns from the detached full-band teacher view."""
+    (ls, rs), (lt, rt) = student, teacher
+    kl = F.kl_div(F.log_softmax(ls.float() / T, 1), F.log_softmax(lt.detach().float() / T, 1),
+                  log_target=True, reduction="batchmean") * T * T
+    return kl + F.mse_loss(rs.float(), rt.detach().float())

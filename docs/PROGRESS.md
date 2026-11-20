@@ -93,3 +93,6 @@ Mean over the 7 held-out real camera profiles, ideal cameras (cultivar acc / fer
 - Regression fixed (negative -> positive R2 everywhere, robust to drift/noise); cultivar NOT yet; phone RGB worst (0.44-0.49).
 Diagnosis: consistency weight 1.0 too strong (no-consistency variant is best); under-training (train loss 0.8-0.9 at
 early stop, epoch 22; noisy val); virtual sampler rarely produces visible-only wide-band cameras; p_full 0.15 too low.
+- Round 2 prepared (kaggle/05b_step7_round2.ipynb): teacher-mode distillation (full 204 view teaches the camera view,
+  weight 0.5), structured camera sampler (rgb-like / multispectral / random, held-out rule kept), 80 epochs patience 30,
+  checkpoint by val accuracy + R2; plus camera-specific models for the remaining 4 cameras.
