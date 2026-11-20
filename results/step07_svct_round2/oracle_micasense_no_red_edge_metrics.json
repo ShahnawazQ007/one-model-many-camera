@@ -1,0 +1,31 @@
+{
+ "split": "official",
+ "seed": 0,
+ "fold": 0,
+ "backbone": "resnet18",
+ "best_epoch": 27,
+ "upscale": 2.0,
+ "aug": "strong",
+ "camera": "micasense_no_red_edge",
+ "n_test": 820,
+ "cultivar": {
+  "accuracy": 0.7841463414634147,
+  "macro_f1": 0.7672503694011722
+ },
+ "GrainWeight": {
+  "R2": 0.6791101004696146,
+  "RMSE": 1130.545403005539
+ },
+ "Gsw": {
+  "R2": 0.073392849977032,
+  "RMSE": 0.026191620261031324
+ },
+ "PhiPS2": {
+  "R2": 0.48101939047734976,
+  "RMSE": 0.07841794166453288
+ },
+ "Fertilizer": {
+  "R2": 0.7306024101013266,
+  "RMSE": 0.23566971891235783
+ }
+}

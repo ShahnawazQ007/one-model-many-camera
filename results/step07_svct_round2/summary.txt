@@ -1,0 +1,35 @@
+Mean over the 7 real camera profiles (cameras the SVCT models never saw):
+                 method   condition  cultivar_acc  Fertilizer_R2  GrainWeight_R2  PhiPS2_R2
+204-band model (Step 6)       drift         0.521         -0.369          -0.667     -0.579
+204-band model (Step 6) drift+radio         0.505         -0.488          -0.752     -0.695
+204-band model (Step 6)     nominal         0.522         -0.364          -0.685     -0.562
+204-band model (Step 6) radiometric         0.504         -0.509          -0.790     -0.567
+         SVCT r2 (ours)       drift         0.566          0.485           0.479      0.224
+         SVCT r2 (ours) drift+radio         0.551          0.357           0.384      0.166
+         SVCT r2 (ours)     nominal         0.551          0.526           0.508      0.226
+         SVCT r2 (ours) radiometric         0.549          0.456           0.446      0.196
+      no consistency r2       drift         0.664          0.507           0.443      0.307
+      no consistency r2 drift+radio         0.639          0.432           0.381      0.235
+      no consistency r2     nominal         0.664          0.527           0.455      0.322
+      no consistency r2 radiometric         0.652          0.461           0.386      0.291
+ no wavelength layer r2       drift         0.652          0.391           0.367      0.234
+ no wavelength layer r2 drift+radio         0.621          0.340           0.333      0.150
+ no wavelength layer r2     nominal         0.647          0.418           0.387      0.234
+ no wavelength layer r2 radiometric         0.628          0.370           0.335      0.159
+   one model per camera     nominal         0.757          0.765           0.694      0.427
+
+On the full 204-band data:
+                 method  cultivar_acc  Fertilizer_R2
+204-band model (Step 6)         0.821          0.759
+         SVCT r2 (ours)         0.709          0.392
+      no consistency r2         0.701          0.608
+ no wavelength layer r2         0.645          0.681
+
+Random unseen virtual cameras:
+                       cultivar_acc        Fertilizer_R2       
+                               mean    std          mean    std
+method                                                         
+SVCT r2 (ours)                0.562  0.058         0.446  0.187
+no consistency r2             0.654  0.091         0.483  0.167
+no wavelength layer r2        0.621  0.087         0.283  0.316
+saved runs/step7_r2_compare/step7_compare.png

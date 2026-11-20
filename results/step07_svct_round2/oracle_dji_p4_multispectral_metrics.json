@@ -1,0 +1,31 @@
+{
+ "split": "official",
+ "seed": 0,
+ "fold": 0,
+ "backbone": "resnet18",
+ "best_epoch": 21,
+ "upscale": 2.0,
+ "aug": "strong",
+ "camera": "dji_p4_multispectral",
+ "n_test": 820,
+ "cultivar": {
+  "accuracy": 0.7817073170731708,
+  "macro_f1": 0.7741001073327313
+ },
+ "GrainWeight": {
+  "R2": 0.7114541846291325,
+  "RMSE": 1072.0557609562475
+ },
+ "Gsw": {
+  "R2": 0.14327247189008097,
+  "RMSE": 0.025184649023209577
+ },
+ "PhiPS2": {
+  "R2": 0.47835009561907604,
+  "RMSE": 0.07861934817444884
+ },
+ "Fertilizer": {
+  "R2": 0.7909589271397718,
+  "RMSE": 0.20759779847031795
+ }
+}

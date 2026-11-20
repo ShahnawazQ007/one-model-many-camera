@@ -96,3 +96,12 @@ early stop, epoch 22; noisy val); virtual sampler rarely produces visible-only w
 - Round 2 prepared (kaggle/05b_step7_round2.ipynb): teacher-mode distillation (full 204 view teaches the camera view,
   weight 0.5), structured camera sampler (rgb-like / multispectral / random, held-out rule kept), 80 epochs patience 30,
   checkpoint by val accuracy + R2; plus camera-specific models for the remaining 4 cameras.
+
+## 21 Nov 2026 — Step 7 round 2 RESULT (kaggle_runs/05b_step7_round2.ipynb; results/step07_svct_round2/)
+Mean over 7 held-out real cameras, ideal (cultivar / fert R2): 204-band 0.522 / -0.364 | SVCT r2 teacher 0.551 / 0.526 |
+**no-consistency r2 0.664 / 0.527** | interp-stem r2 (teacher) 0.647 / 0.418 | one model per camera (all 7 now) 0.757 / 0.765.
+- Best single model (no consistency): MicaSense 0.757 (= its own oracle 0.760), DJI 0.707 (oracle 0.782), Sentinel 0.677 (0.718);
+  weakest phone RGB 0.510 (oracle 0.795). Robust: drift 0.664, drift+radio 0.639.
+- Consistency loss hurts cultivar in both rounds (sym and teacher) -> drop from the method, report as a negative ablation.
+- No-consistency run hit the 80-epoch limit while still improving (val acc 0.59 rising) -> train longer.
+- Clean stem ablation still missing (interp WITHOUT consistency).
