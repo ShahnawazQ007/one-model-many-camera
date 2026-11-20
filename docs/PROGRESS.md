@@ -85,3 +85,11 @@
 - `experiments/train_svct.py`: random virtual cameras (3-12 bands, FWHM 10-100 nm, p_full 0.15), 7 real profiles held out
   (15 nm rule); validation on 6 fixed virtual cameras; test on 204 + 7 real x 4 conditions + 20 random cameras.
 - Kaggle `kaggle/05_step7_svct.ipynb`: SVCT main, ablation interp-stem, ablation no-consistency; `scripts/plot_step7.py`.
+
+## 20 Nov 2026 — Step 7 round 1 RESULT (kaggle_runs/05_step7_svct.ipynb; results/step07_svct_round1/)
+Mean over the 7 held-out real camera profiles, ideal cameras (cultivar acc / fertilizer R2):
+- 204-band model 0.522 / -0.364 | SVCT main 0.502 / +0.480 | no wavelength layer 0.556 / +0.377 | no consistency 0.639 / +0.456
+- one model per camera (3 cameras only) 0.758 / 0.763. On 204 bands: baseline 0.821, SVCT variants 0.56-0.71.
+- Regression fixed (negative -> positive R2 everywhere, robust to drift/noise); cultivar NOT yet; phone RGB worst (0.44-0.49).
+Diagnosis: consistency weight 1.0 too strong (no-consistency variant is best); under-training (train loss 0.8-0.9 at
+early stop, epoch 22; noisy val); virtual sampler rarely produces visible-only wide-band cameras; p_full 0.15 too low.
