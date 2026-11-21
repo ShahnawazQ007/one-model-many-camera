@@ -150,3 +150,9 @@ Leaf-grouped 5-fold CV × 3 seeds (1595 spectra, 319 leaves). Mean over 15 folds
   The gap is a sim-to-real / calibration problem, not specific to SVCT: even a model trained on *simulated MicaSense* only reaches crop 0.59,
   and real vs simulated band agreement is low (R² blue 0.04, green 0.34, red 0.08, RE 0.61, NIR 0.01; uncalibrated DNs).
 - Trade-off: on the original full spectrum SVCT costs accuracy (stage 0.90 → 0.68, water 0.93 → 0.75) — unlike the fruit data. To report honestly.
+
+## Step 9 / E5 — cross-validation of the frozen Step 7 settings (Kaggle) — ready to run
+- `scripts/run_cv.py` trains per fold: 204-band baseline (+ eval_cameras), SVCT wavelength stem, SVCT interp (two GPUs in parallel; finished runs are skipped).
+- `scripts/summarize_cv.py` → mean (std over folds) of the mean over the 7 held-out cameras, per-fold table, wins vs baseline.
+- Notebooks: `kaggle/06a_step9_cv.ipynb` (folds 0–2), `kaggle/06b_step9_cv.ipynb` (folds 3–4); seed 0. Camera-specific oracles are not repeated per fold (too costly) — the Step 7 single-split oracles remain the reference.
+- Pipeline smoke-tested on a synthetic dataset (CPU).
