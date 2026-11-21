@@ -25,6 +25,8 @@ p.add_argument("--seed", type=int, default=0)
 p.add_argument("--out", default="runs/cv")
 p.add_argument("--workers", type=int, default=2)
 p.add_argument("--smoke", action="store_true", help="tiny runs to check the pipeline")
+p.add_argument("--budget-hours", type=float, default=11.0,
+               help="do not START a job that would likely end after this (Kaggle kills runs at 12 h and may lose all files)")
 a = p.parse_args()
 out = pathlib.Path(a.out); (out / "logs").mkdir(parents=True, exist_ok=True)
 PY = sys.executable
@@ -52,6 +54,21 @@ def jobs(kind, fold):
                                      "--workers", str(a.workers), "--out", str(d)])]
 
 
+EXPECTED_MIN = {"baseline": 100, "baseline_eval": 55, "svct": 150, "interp": 200}  # measured on Kaggle T4 x2 (conservative)
+T_START = time.time()
+
+
+def report(name, done_file):
+    """Print the key numbers into the log right away, so they survive even if the files are lost."""
+    import pandas as pd
+    if done_file.suffix == ".csv":
+        df = pd.read_csv(done_file)
+        real = df[~df.camera.str.startswith("random_") & (df.camera != "hyperspectral_204")]
+        m = real.groupby("condition")[["cultivar_acc", "Fertilizer_R2", "GrainWeight_R2", "PhiPS2_R2"]].mean().round(4)
+        print(f"RESULT {name} | mean over 7 cameras:\n{m.to_string()}", flush=True)
+        print(f"RESULT_CSV {name}\n{df.round(4).to_csv(index=False)}END_CSV", flush=True)
+
+
 def stream(gpu, kinds, status):
     env = {**os.environ, "CUDA_VISIBLE_DEVICES": str(gpu)}
     for fold in a.folds:
@@ -61,6 +78,12 @@ def stream(gpu, kinds, status):
                 if done_file.exists():
                     status[gpu] = f"{name}: already done"
                     continue
+                key = "baseline_eval" if name.startswith("baseline_eval") else name.split("_s")[0]
+                left = a.budget_hours * 60 - (time.time() - T_START) / 60
+                if not a.smoke and EXPECTED_MIN[key] > left:
+                    print(f"[GPU{gpu}] SKIP {name}: needs ~{EXPECTED_MIN[key]} min, only {left:.0f} min left in the budget", flush=True)
+                    status[gpu] = "stopped (time budget)"
+                    return
                 log = open(out / "logs" / f"{name}.log", "w")
                 t0 = time.time()
                 status[gpu] = f"{name}: running"
@@ -68,7 +91,9 @@ def stream(gpu, kinds, status):
                 log.close()
                 msg = "ok" if r.returncode == 0 and done_file.exists() else f"FAILED (exit {r.returncode}, see logs/{name}.log)"
                 print(f"[GPU{gpu}] {name} {msg} in {(time.time() - t0) / 60:.0f} min", flush=True)
-                if msg != "ok":
+                if msg == "ok":
+                    report(name, done_file)
+                else:
                     print("".join(open(out / "logs" / f"{name}.log").readlines()[-15:]), flush=True)
 
 
