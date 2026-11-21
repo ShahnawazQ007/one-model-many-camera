@@ -95,6 +95,7 @@ def stream(gpu, kinds, status):
                     report(name, done_file)
                 else:
                     print("".join(open(out / "logs" / f"{name}.log").readlines()[-15:]), flush=True)
+    status[gpu] = "all its jobs finished"
 
 
 import torch  # noqa: E402
