@@ -131,3 +131,22 @@ Fruit-grouped 5-fold CV × 3 seeds, 220 paired recordings (110 fruits). Mean ove
 - Real Corning reduced to 7 simulated profiles: full sugar R² 0.01 vs SVCT 0.65; fruit 0.53 vs 0.93.
 - No loss on the training camera (FX10 sugar 0.77 → 0.80).
 - Ripeness is hard for every model (~0.58, including the oracle) → a data limit, not a camera problem.
+
+## Step 8 / E6 — Estrada leaves (train ASD spectrometer → test real MicaSense + simulated cameras) — done
+Leaf-grouped 5-fold CV × 3 seeds (1595 spectra, 319 leaves). Mean over 15 folds:
+
+| Test | model | crop acc | stage acc | chlorophyll R² | water R² |
+|---|---|---|---|---|---|
+| 7 simulated cameras (mean) | full | 0.522 | 0.176 | −0.366 | −0.633 |
+| | **svct_tok** | **0.843** | **0.539** | **0.733** | **0.564** |
+| REAL MicaSense | full | 0.457 | 0.198 | −0.002 | −0.154 |
+| | svct / svct_tok | 0.524 / 0.543 | 0.275 / 0.271 | 0.465 / 0.425 | 0.149 / 0.192 |
+| | sim_ms (trained on simulated MicaSense) | 0.593 | 0.270 | 0.356 | −0.115 |
+| | real_ms (trained on real MicaSense labels) | 0.927 | 0.525 | 0.800 | 0.514 |
+| Full spectrum (same sensor) | full / svct | 0.980 / 0.924 | 0.899 / 0.681 | 0.860 / 0.812 | 0.934 / 0.750 |
+
+- Simulated cameras: SVCT turns negative R² into 0.73 (chlorophyll) / 0.56 (water).
+- Real MicaSense: SVCT beats the plain model on every task (chlorophyll −0.00 → 0.47), but a large gap to real_ms remains.
+  The gap is a sim-to-real / calibration problem, not specific to SVCT: even a model trained on *simulated MicaSense* only reaches crop 0.59,
+  and real vs simulated band agreement is low (R² blue 0.04, green 0.34, red 0.08, RE 0.61, NIR 0.01; uncalibrated DNs).
+- Trade-off: on the original full spectrum SVCT costs accuracy (stage 0.90 → 0.68, water 0.93 → 0.75) — unlike the fruit data. To report honestly.

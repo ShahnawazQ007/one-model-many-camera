@@ -1,0 +1,14 @@
+{
+ "data": "/mnt/user-data/uploads/Assignments/anycam/data/raw/estrada_leaves/DATASET",
+ "micasense": "results/step04_simulator_check/estrada_micasense_means.csv",
+ "out": "results/step08_estrada",
+ "epochs": 150,
+ "seeds": [
+  0,
+  1,
+  2
+ ],
+ "folds": 5,
+ "radio": 0.5,
+ "quick": false
+}

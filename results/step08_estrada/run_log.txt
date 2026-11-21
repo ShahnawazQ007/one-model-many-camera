@@ -1,0 +1,42 @@
+1595 spectra, 319 leaves, real MicaSense for 1594
+seed 0 fold 0 done (41s) | REAL MicaSense crop acc: svct_tok 0.52 sim_ms 0.58 real_ms 0.93
+seed 0 fold 1 done (80s) | REAL MicaSense crop acc: svct_tok 0.57 sim_ms 0.65 real_ms 0.92
+seed 0 fold 2 done (567s) | REAL MicaSense crop acc: svct_tok 0.47 sim_ms 0.51 real_ms 0.91
+seed 0 fold 3 done (1143s) | REAL MicaSense crop acc: svct_tok 0.58 sim_ms 0.68 real_ms 0.94
+seed 0 fold 4 done (2213s) | REAL MicaSense crop acc: svct_tok 0.54 sim_ms 0.57 real_ms 0.92
+seed 1 fold 0 done (3534s) | REAL MicaSense crop acc: svct_tok 0.54 sim_ms 0.57 real_ms 0.93
+seed 1 fold 1 done (4698s) | REAL MicaSense crop acc: svct_tok 0.57 sim_ms 0.59 real_ms 0.92
+seed 1 fold 2 done (4957s) | REAL MicaSense crop acc: svct_tok 0.55 sim_ms 0.54 real_ms 0.94
+seed 1 fold 3 done (4996s) | REAL MicaSense crop acc: svct_tok 0.50 sim_ms 0.58 real_ms 0.92
+seed 1 fold 4 done (5035s) | REAL MicaSense crop acc: svct_tok 0.58 sim_ms 0.65 real_ms 0.93
+seed 2 fold 0 done (5074s) | REAL MicaSense crop acc: svct_tok 0.54 sim_ms 0.65 real_ms 0.93
+seed 2 fold 1 done (5113s) | REAL MicaSense crop acc: svct_tok 0.60 sim_ms 0.63 real_ms 0.94
+seed 2 fold 2 done (5151s) | REAL MicaSense crop acc: svct_tok 0.50 sim_ms 0.57 real_ms 0.93
+seed 2 fold 3 done (5189s) | REAL MicaSense crop acc: svct_tok 0.55 sim_ms 0.61 real_ms 0.93
+seed 2 fold 4 done (5227s) | REAL MicaSense crop acc: svct_tok 0.54 sim_ms 0.51 real_ms 0.92
+
+Mean over folds (std in brackets):
+                                        crop_acc      stage_acc  chlorophyll_R2    water_FMC_R2
+test                     model                                                                 
+REAL_micasense           full      0.457 (0.044)  0.198 (0.028)  -0.002 (0.243)  -0.154 (0.114)
+                         real_ms   0.927 (0.009)  0.525 (0.028)   0.800 (0.017)   0.514 (0.033)
+                         sim_ms    0.593 (0.051)  0.270 (0.018)   0.356 (0.076)  -0.115 (0.110)
+                         svct      0.524 (0.031)  0.275 (0.016)   0.465 (0.056)   0.149 (0.086)
+                         svct_tok  0.543 (0.035)  0.271 (0.017)   0.425 (0.041)   0.192 (0.046)
+full_spectrum            full      0.980 (0.007)  0.899 (0.017)   0.860 (0.023)   0.934 (0.009)
+                         svct      0.924 (0.013)  0.681 (0.020)   0.812 (0.024)   0.750 (0.020)
+                         svct_tok  0.912 (0.016)  0.647 (0.022)   0.798 (0.029)   0.708 (0.019)
+sim_micasense_rededge_mx full      0.626 (0.031)  0.158 (0.037)   0.281 (0.194)  -0.331 (0.165)
+                         sim_ms    0.935 (0.016)  0.672 (0.021)   0.815 (0.023)   0.725 (0.029)
+                         svct      0.817 (0.019)  0.510 (0.025)   0.756 (0.027)   0.563 (0.037)
+                         svct_tok  0.859 (0.022)  0.513 (0.030)   0.750 (0.027)   0.539 (0.039)
+
+All simulated cameras, mean crop acc / stage acc / chlorophyll R2 / water R2:
+          crop_acc  stage_acc  chlorophyll_R2  water_FMC_R2
+model                                                      
+full         0.522      0.176          -0.366        -0.633
+svct         0.810      0.515           0.721         0.539
+svct_tok     0.843      0.539           0.733         0.564
+
+Calibration quality (R2 real vs simulated band, test leaves): {'band1': 0.042, 'band2': 0.342, 'band3': 0.079, 'band4': 0.608, 'band5': 0.008}
+saved results/step08_estrada
