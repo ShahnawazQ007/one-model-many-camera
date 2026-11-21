@@ -1,0 +1,11 @@
+\begin{tabular}{@{}lcccccc@{}}
+\toprule
+ & \multicolumn{2}{c}{Cultivar} & \multicolumn{4}{c}{$R^2$} \\
+\cmidrule(lr){2-3}\cmidrule(l){4-7}
+Model & Acc. & F1 & Grain & $g_{sw}$ & $\Phi_{PSII}$ & Fert. \\
+\midrule
+ResNet18, 204 bands & 0.730 & 0.705 & 0.712 & 0.114 & 0.407 & 0.774 \\
+ResNet18, $2\times$ input, strong aug.\ (reference) & 0.821 & 0.805 & 0.584 & 0.077 & 0.524 & 0.759 \\
+ConvNeXt-T, $2\times$ input, strong aug. & 0.768 & 0.764 & 0.714 & 0.037 & 0.471 & 0.785 \\
+\bottomrule
+\end{tabular}

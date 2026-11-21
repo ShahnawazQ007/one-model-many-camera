@@ -1,0 +1,16 @@
+\begin{tabular}{@{}clcccccc@{}}
+\toprule
+ & & \multicolumn{4}{c}{7 held-out cameras (ideal)} & \multicolumn{2}{c}{204 bands} \\
+\cmidrule(lr){3-6}\cmidrule(l){7-8}
+Round & Variant & Cult. & Fert. & Grain & $\Phi_{PSII}$ & Cult. & Fert. \\
+\midrule
+1 & two views + symmetric consistency (w=1), uniform sampler & 0.502 & 0.480 & 0.464 & 0.203 & 0.562 & 0.543 \\
+1 & same, without consistency & 0.639 & 0.456 & 0.356 & 0.285 & 0.707 & 0.609 \\
+1 & same as first, interpolation instead of stem & 0.556 & 0.377 & 0.366 & 0.238 & 0.572 & 0.594 \\
+2 & teacher distillation (w=0.5), structured sampler & 0.551 & 0.526 & 0.508 & 0.226 & 0.709 & 0.392 \\
+2 & structured sampler, no consistency & 0.664 & 0.527 & 0.455 & 0.322 & 0.701 & 0.608 \\
+2 & teacher distillation, interpolation & 0.647 & 0.418 & 0.387 & 0.234 & 0.645 & 0.681 \\
+3 & final: no consistency, $p_{full}$=0.3, phone-weighted sampler, 150 ep. & 0.670 & 0.582 & 0.528 & 0.254 & 0.660 & 0.589 \\
+3 & final, interpolation instead of stem & 0.732 & 0.468 & 0.429 & 0.227 & 0.689 & 0.629 \\
+\bottomrule
+\end{tabular}

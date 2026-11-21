@@ -1,0 +1,140 @@
+\documentclass[11pt]{article}
+\usepackage[a4paper,margin=2.3cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,graphicx,booktabs,multirow,xcolor}
+\usepackage[hidelinks]{hyperref}
+\usepackage{caption,float}
+\captionsetup{font=small,labelfont=bf}
+\newcommand{\pending}{\textcolor{orange}{[pending]}}
+\graphicspath{{figures/}}
+\title{One Model, Any Camera --- Results Report\\[2pt]\large Advanced Computer Vision semester project}
+\author{Shahnawaz Qureshi\\Sukkur IBA University}
+\date{\today}
+\begin{document}
+\maketitle
+
+\noindent\textbf{Project in one sentence.} We train a plant model once on hyperspectral images (204 bands) and use it,
+without retraining and without any data from the new camera, on cheaper cameras (phone, drone, satellite), using
+\emph{Stochastic Virtual Camera Training} (SVCT): every training batch is seen through a new random virtual camera.
+The companion paper draft (\texttt{main.pdf}) gives the full method and discussion; this report lists every experiment
+step by step with all numbers. All numbers are generated from the result files in the GitHub repository
+(\url{https://github.com/ShahnawazQ007/one-model-many-camera}, folder \texttt{results/}).
+
+\section*{Summary of findings}
+\begin{enumerate}
+\item \textbf{The problem is real.} A good 204-band model (0.821 cultivar accuracy) drops to 0.522 on seven unseen camera
+profiles, and its fertilizer, grain-weight and $\Phi_{PSII}$ predictions become worse than guessing the mean
+(negative $R^2$).
+\item \textbf{The information is there.} Models trained separately on each camera reach 0.757 / fertilizer $R^2$ 0.765:
+a few bands are enough; the 204-band model simply cannot use them.
+\item \textbf{One SVCT model closes most of the gap} without data from the new cameras: 90\% of the cultivar gap
+(interpolation variant, 0.732) and 84\% of the fertilizer gap (wavelength-stem variant, $R^2$ 0.582); robust to band
+drift and calibration errors.
+\item \textbf{Real second camera (fruit).} Trained only on the Specim FX10, SVCT predicts sugar content on the real Corning
+camera as well as a model trained on Corning labels ($R^2$ 0.794 vs.\ 0.793).
+\item \textbf{Real drone camera (leaves).} SVCT beats the plain model on all tasks, but a large gap to a model trained on
+real drone labels remains, caused by the uncalibrated drone images.
+\item \textbf{Costs and open points.} SVCT is weaker than the specialised model on the original 204-band camera;
+consistency losses hurt; cross-validation (Step 9) is still running.
+\end{enumerate}
+
+\section{Data and splits (Step 3)}
+\begin{itemize}
+\item \textbf{HyperLeaf2024}: 2,410 wheat leaves, 204 bands, 36 field plots (4 cultivars $\times$ 3 fertilizer levels
+$\times$ 3 plots). Targets: cultivar, grain weight, $g_{sw}$, $\Phi_{PSII}$, fertilizer. Official split (train and test
+plots never shared) + plot-grouped 5-fold cross-validation.
+\item \textbf{DeepHS Fruit v2}: 110 fruits (kaki, mango, papaya), each recorded by two real cameras (Specim FX10, 224 bands;
+Corning microHSI 410, 249 bands). Split by fruit (the original lists share fruits = leakage).
+\item \textbf{Estrada leaves}: 319 leaves (avocado, olive, grape) $\times$ 5 drying stages; ASD spectrometer + real
+MicaSense images. Split by leaf.
+\end{itemize}
+
+\section{Is the camera simulator realistic? (Step 4)}
+Simulating the same cheap cameras from the two real DeepHS cameras gives almost identical band values
+(Pearson $r$ 0.94 blue, 0.991--0.998 other bands); the remaining difference is a per-band gain (0.86--1.35), so the
+training calibration-gain range was widened to 0.8--1.25. The MicaSense images of the Estrada dataset are uncalibrated
+digital numbers, so they cannot be used as an absolute check (band agreement $R^2$ 0.01--0.61).
+
+\section{Held-out cameras}
+\begin{table}[H]\centering\small
+\caption{The seven camera profiles used only for testing.}
+\input{tables/tab_cameras}
+\end{table}
+
+\section{Baseline on the original camera (Step 5)}
+\begin{table}[H]\centering\small
+\caption{204-band models, official split. The ResNet18 with $2\times$ input and strong augmentation is the reference.}
+\input{tables/tab_baseline}
+\end{table}
+A first fold of plot-grouped cross-validation with the plain ResNet18 gave cultivar 0.592 and fertilizer $R^2$ 0.806,
+showing that results vary between plot splits; this is why Step 9 repeats the main experiment over five folds.
+
+\section{The camera gap (Step 6) and SVCT (Step 7)}
+\begin{table}[H]\centering\small\setlength{\tabcolsep}{3.5pt}
+\caption{Mean over the seven held-out cameras. ``One model per camera'' needs labelled data from each camera.}
+\resizebox{\linewidth}{!}{\input{tables/tab_main}}
+\end{table}
+
+\begin{table}[H]\centering\small
+\caption{Per camera (ideal conditions). Base = 204-band model; Stem / Interp = SVCT variants; Own = model trained on
+that camera.}
+\input{tables/tab_per_camera}
+\end{table}
+
+\begin{figure}[H]\centering
+\includegraphics[width=\linewidth]{fig3_per_camera.pdf}
+\caption{Per-camera results. Hatched: one model per camera.}
+\end{figure}
+
+\paragraph{Reading the results.} The phone is the hardest camera for the 204-band model (0.360, near chance); SVCT
+with interpolation reaches 0.768 there, close to a phone-specific model (0.795). The two SVCT variants are complementary:
+interpolation is better for cultivar, the wavelength stem for the physiological traits. On the full 204 bands SVCT is
+lower than the specialised model (0.660--0.689 vs.\ 0.821), so in practice both models would be kept.
+
+\section{Development rounds (ablation)}
+\begin{table}[H]\centering\scriptsize\setlength{\tabcolsep}{3pt}
+\caption{Three development rounds, same held-out cameras. The method was frozen after round 3.}
+\input{tables/tab_ablation}
+\end{table}
+Consistency losses (making two camera views of one leaf agree) lowered cultivar accuracy in both rounds where they were
+tried, so they were removed. A sampler that practises RGB-like and multispectral layouts, more full-band batches and
+longer training improved both variants.
+
+\section{Cross-validation (Step 9)}
+\begin{table}[H]\centering\small\setlength{\tabcolsep}{4pt}
+\caption{Plot-grouped 5-fold cross-validation, mean $\pm$ s.d.\ over folds (mean over the seven held-out cameras).}
+\input{tables/tab_cv}
+\end{table}
+\noindent\textcolor{orange}{Running on Kaggle at the time of writing (two notebooks, folds 0--2 and 3--4); the table will be
+filled in automatically from the run outputs.}
+
+\section{Real second cameras (Step 8)}
+\begin{table}[H]\centering\scriptsize\setlength{\tabcolsep}{4pt}
+\caption{DeepHS fruit: trained on FX10, tested on unseen fruits (5 folds $\times$ 3 seeds).}
+\input{tables/tab_deephs}
+\end{table}
+\begin{table}[H]\centering\scriptsize\setlength{\tabcolsep}{4pt}
+\caption{Estrada leaves: trained on the spectrometer, tested on unseen leaves (5 folds $\times$ 3 seeds).}
+\input{tables/tab_estrada}
+\end{table}
+\begin{figure}[H]\centering
+\includegraphics[width=\linewidth]{fig4_real_cameras.pdf}
+\caption{Real second cameras. Hatched: trained on labelled data of the target camera.}
+\end{figure}
+
+\paragraph{Reading the results.} On fruit, SVCT matches the Corning-trained model for sugar without any Corning labels
+and fixes the negative firmness score of the plain model. Ripeness stays around 0.58 for every model, including the
+Corning-trained one, so it is a label/data limit. On leaves, the real drone camera remains difficult for all
+simulation-trained models (even one trained on simulated MicaSense bands reaches only 0.593 crop accuracy), because the
+released drone images are not radiometrically calibrated.
+
+\section{Limitations and next steps}
+\begin{itemize}
+\item Finish Step 9 (cross-validation) and add paired statistical tests.
+\item Compare with published camera-agnostic methods (Hyve, CARL).
+\item Replace the approximate phone and RGB+NIR responses with measured ones.
+\item Field drone data with reflectance panels for a calibrated real-camera test.
+\item Product: package + demo app (``AnyCam'') that takes a camera's band list and returns predictions.
+\end{itemize}
+
+\end{document}

@@ -1,0 +1,14 @@
+{
+ "svct_stem": {
+  "cultivar_acc": 62.904543361701506,
+  "Fertilizer_R2": 83.83487079685904,
+  "GrainWeight_R2": 87.91982299853659,
+  "PhiPS2_R2": 82.54176932444496
+ },
+ "svct_interp": {
+  "cultivar_acc": 89.5156618990331,
+  "Fertilizer_R2": 73.67191770961904,
+  "GrainWeight_R2": 80.7450187901068,
+  "PhiPS2_R2": 79.753293658487
+ }
+}
