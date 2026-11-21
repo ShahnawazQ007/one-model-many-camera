@@ -350,8 +350,15 @@ other experiments.
 \subsection{Cross-validation on HyperLeaf2024}
 \label{sec:cv}
 The official test set contains only a few plots, so the frozen settings are repeated with plot-grouped 5-fold
-cross-validation (Table~\ref{tab:cv}). \todo{Step 9 is running at the time of writing; this table and the paragraph will
-be updated with mean $\pm$ s.d.\ over the folds and the number of folds in which each SVCT variant beats the baseline.}
+cross-validation (Table~\ref{tab:cv}). \todo{Two of the five folds (3 and 4) are complete; folds 0--2 are still running and
+will be added.} On the completed folds the picture of the official split is confirmed and the gains are larger: the
+204-band model reaches only 0.332 mean cultivar accuracy on the held-out cameras (0.171 on the phone) and negative $R^2$
+for fertilizer and grain weight, while both SVCT variants reach about 0.75 cultivar accuracy and fertilizer $R^2$ of
+0.51--0.54, and beat the baseline on both metrics in every completed fold (mean gain $+0.42$ in accuracy and $+0.74$ to
+$+0.77$ in fertilizer $R^2$). With drift and calibration errors together they keep 0.72--0.73 accuracy. On these folds
+the two variants are close; the stem is slightly better for cultivar and $\Phi_{PSII}$, interpolation slightly better and
+more stable for fertilizer. On the full 204 bands, SVCT with the stem matches the specialised model in cultivar accuracy
+(0.780 vs.\ 0.781) but is less accurate and less stable for the regressions.
 
 \begin{table}[t]
 \centering\small
@@ -437,8 +444,8 @@ exist; SVCT is aimed at the much more common case where they do not.
 
 \subsection{Limitations}
 \label{sec:limits}
-(i) The main HyperLeaf results come from the official split with one seed; cross-validation is in progress
-(Section~\ref{sec:cv}) and statistical tests are still to be added. (ii) The seven HyperLeaf test cameras are simulated
+(i) The detailed HyperLeaf results come from the official split with one seed; cross-validation is complete for two
+of five folds (Section~\ref{sec:cv}) and statistical tests are still to be added. (ii) The seven HyperLeaf test cameras are simulated
 with Gaussian responses; the phone and RGB+NIR profiles are approximate. (iii) HyperLeaf comes from one field and season,
 so we claim robustness to sensor shift only. (iv) SVCT lowers accuracy on the original hyperspectral camera
 (Table~\ref{tab:main}); a two-model deployment avoids this. (v) Hyve, CARL and adaptation baselines were not run for

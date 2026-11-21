@@ -156,3 +156,10 @@ Leaf-grouped 5-fold CV × 3 seeds (1595 spectra, 319 leaves). Mean over 15 folds
 - `scripts/summarize_cv.py` → mean (std over folds) of the mean over the 7 held-out cameras, per-fold table, wins vs baseline.
 - Notebooks: `kaggle/06a_step9_cv.ipynb` (folds 0–2), `kaggle/06b_step9_cv.ipynb` (folds 3–4); seed 0. Camera-specific oracles are not repeated per fold (too costly) — the Step 7 single-split oracles remain the reference.
 - Pipeline smoke-tested on a synthetic dataset (CPU).
+
+## 21 Nov 2026 — Step 9 partial: folds 3–4 done (kaggle_runs/06b_step9_cv.ipynb)
+Mean over 7 held-out cameras, ideal (cultivar / fert R2), mean (sd) over 2 folds:
+- 204-band 0.332 (0.048) / −0.229 (0.285) | SVCT stem 0.758 (0.057) / 0.511 (0.168) | SVCT interp 0.748 (0.058) / 0.542 (0.094)
+- Both SVCT variants beat the baseline in 2/2 folds on both metrics; drift+radio 0.72–0.73 accuracy. Phone RGB 0.171 → 0.68–0.75.
+- Full 204 bands: baseline 0.781 / 0.812; stem 0.780 / 0.382 (unstable regression); interp 0.688 / 0.646.
+- Folds 0–2 (06a) still running.
