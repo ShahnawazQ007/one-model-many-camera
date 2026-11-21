@@ -1,0 +1,42 @@
+220 paired recordings, 110 fruits; FX10 224 bands, Corning 249 bands
+seed 0 fold 0 (260s) | REAL Corning ripeness: svct 0.57 svct_tok 0.55 corning_oracle 0.52
+seed 0 fold 1 (443s) | REAL Corning ripeness: svct 0.59 svct_tok 0.73 corning_oracle 0.73
+seed 0 fold 2 (546s) | REAL Corning ripeness: svct 0.66 svct_tok 0.68 corning_oracle 0.70
+seed 0 fold 3 (745s) | REAL Corning ripeness: svct 0.55 svct_tok 0.55 corning_oracle 0.50
+seed 0 fold 4 (1159s) | REAL Corning ripeness: svct 0.59 svct_tok 0.50 corning_oracle 0.41
+seed 1 fold 0 (1450s) | REAL Corning ripeness: svct 0.52 svct_tok 0.57 corning_oracle 0.45
+seed 1 fold 1 (1780s) | REAL Corning ripeness: svct 0.55 svct_tok 0.66 corning_oracle 0.64
+seed 1 fold 2 (2003s) | REAL Corning ripeness: svct 0.55 svct_tok 0.52 corning_oracle 0.66
+seed 1 fold 3 (2498s) | REAL Corning ripeness: svct 0.57 svct_tok 0.59 corning_oracle 0.61
+seed 1 fold 4 (2757s) | REAL Corning ripeness: svct 0.64 svct_tok 0.57 corning_oracle 0.70
+seed 2 fold 0 (3296s) | REAL Corning ripeness: svct 0.57 svct_tok 0.55 corning_oracle 0.52
+seed 2 fold 1 (3711s) | REAL Corning ripeness: svct 0.57 svct_tok 0.55 corning_oracle 0.55
+seed 2 fold 2 (4042s) | REAL Corning ripeness: svct 0.59 svct_tok 0.61 corning_oracle 0.59
+seed 2 fold 3 (4373s) | REAL Corning ripeness: svct 0.55 svct_tok 0.55 corning_oracle 0.52
+seed 2 fold 4 (4605s) | REAL Corning ripeness: svct 0.59 svct_tok 0.68 corning_oracle 0.59
+
+Mean (std) over folds:
+                                        fruit_acc   ripeness_acc       sugar_R2 log_firmness_R2
+test                model                                                                      
+FX10 (same camera)  full            0.982 (0.021)  0.630 (0.103)  0.773 (0.115)   0.584 (0.230)
+                    svct            0.979 (0.018)  0.583 (0.048)  0.799 (0.074)   0.552 (0.186)
+                    svct_tok        0.983 (0.025)  0.589 (0.057)  0.766 (0.081)   0.568 (0.218)
+REAL Corning (full) corning_oracle  0.995 (0.009)  0.580 (0.095)  0.793 (0.092)   0.566 (0.251)
+                    full            0.838 (0.110)  0.558 (0.051)  0.547 (0.293)  -0.364 (0.623)
+                    svct            0.971 (0.034)  0.576 (0.036)  0.794 (0.065)   0.463 (0.244)
+                    svct_tok        0.961 (0.051)  0.589 (0.068)  0.731 (0.123)   0.455 (0.341)
+
+REAL Corning reduced to the simulated camera profiles (mean over cameras and folds):
+          fruit_acc  ripeness_acc  sugar_R2  log_firmness_R2
+model                                                       
+full          0.531         0.444     0.014           -3.858
+svct          0.934         0.543     0.651            0.403
+svct_tok      0.945         0.574     0.648            0.376
+
+FX10 reduced to the simulated camera profiles (mean over cameras and folds):
+          fruit_acc  ripeness_acc  sugar_R2  log_firmness_R2
+model                                                       
+full          0.716         0.412     0.098           -2.742
+svct          0.947         0.550     0.697            0.459
+svct_tok      0.960         0.573     0.705            0.469
+saved results/step08_deephs

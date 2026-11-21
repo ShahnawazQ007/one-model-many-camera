@@ -1,0 +1,13 @@
+{
+ "labels": "/home/claude/one-model-many-camera/data/raw/deephs_fruit/labels",
+ "spectra": "/home/claude/one-model-many-camera/results/step04_simulator_check/deephs_mean_spectra.csv",
+ "out": "results/step08_deephs",
+ "epochs": 200,
+ "seeds": [
+  0,
+  1,
+  2
+ ],
+ "radio": 0.5,
+ "quick": false
+}

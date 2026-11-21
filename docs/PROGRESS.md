@@ -116,3 +116,18 @@ Mean over 7 held-out real cameras, ideal (cultivar / fert R2 / grain R2):
 - SVCT + interpolation (plain 204-band ResNet) **0.732** / 0.468 / 0.429 (phone RGB 0.768 vs oracle 0.795)
 => SVCT closes ~89 % of the cultivar gap (interp) and ~84 % of the fertilizer gap (stem). Stem = better regression,
    interp = better classification. Single split: confirm with CV/seeds before claiming which variant is better.
+
+## Step 8 / E4 — REAL second camera (DeepHS fruit: train FX10 → test real Corning) — done
+Fruit-grouped 5-fold CV × 3 seeds, 220 paired recordings (110 fruits). Mean over 15 folds:
+
+| Test on REAL Corning | fruit acc | ripeness acc | sugar R² | log firmness R² |
+|---|---|---|---|---|
+| full (plain, FX10 only) | 0.838 | 0.558 | 0.547 | −0.364 |
+| **SVCT (interp)** | **0.971** | 0.576 | **0.794** | **0.463** |
+| SVCT (tokens) | 0.961 | 0.589 | 0.731 | 0.455 |
+| Corning oracle (trained on Corning labels) | 0.995 | 0.580 | 0.793 | 0.566 |
+
+- SVCT matches the "one model per camera" oracle on sugar (0.794 vs 0.793) without ever seeing a Corning label.
+- Real Corning reduced to 7 simulated profiles: full sugar R² 0.01 vs SVCT 0.65; fruit 0.53 vs 0.93.
+- No loss on the training camera (FX10 sugar 0.77 → 0.80).
+- Ripeness is hard for every model (~0.58, including the oracle) → a data limit, not a camera problem.
